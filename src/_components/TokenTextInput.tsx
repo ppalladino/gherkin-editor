@@ -1,4 +1,4 @@
-interface TokenTextProps {
+interface TokenTextInputProps {
     tokenKey: string;
     tokenValueConstraint: string; // TEXT | NUMBER
     onTokenValueChange: (featureTemplateStepId: string, tokenKey: string, value: string) => void;
@@ -6,13 +6,13 @@ interface TokenTextProps {
     featureStepId: string;
 }
 
-export default function TokenText({ 
+export default function TokenTextInput({ 
     tokenKey,
     tokenValueConstraint, 
     onTokenValueChange, 
     featureStepId,
     tokenValue 
-}: TokenTextProps) {
+}: TokenTextInputProps) {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         onTokenValueChange(featureStepId, tokenKey, e.target.value);

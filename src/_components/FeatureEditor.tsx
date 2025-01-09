@@ -1,8 +1,8 @@
 'use client'
 
 import React, { useState } from "react";
-import TokenSelect from "./token-select";
-import TokenText from "./token-text";
+import TokenSelectInput from "./TokenSelectInput";
+import TokenTextInput from "./TokenTextInput";
 
 export interface StepTokenOptions {
     id: string;
@@ -163,7 +163,7 @@ export default function FeatureEditor() {
                             return <span key={index}>Token options with key"{tokenConstraint}" not found</span>;
                         }
 
-                        return <TokenSelect 
+                        return <TokenSelectInput 
                             key={index} 
                             tokenKey={tokenKey} 
                             tokenOptions={options} 
@@ -172,7 +172,7 @@ export default function FeatureEditor() {
                             onSelectedOptionChange={handleTokenValueChange} 
                         />;
                     case "text":
-                        return <TokenText
+                        return <TokenTextInput
                             key={index} 
                             tokenKey={tokenKey} 
                             tokenValueConstraint={tokenConstraint}

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import FeatureEditor from "@/_components/feature-editor";
+import FeatureEditor from "@/_components/FeatureEditor";
 
 export default function Home() {
   return (
