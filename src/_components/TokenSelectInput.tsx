@@ -2,7 +2,7 @@ interface TokenSelectInputProps {
     tokenKey: string;
     tokenOptions: string[];
     onSelectedOptionChange: (featureTemplateStepId: string, tokenKey: string, option: string) => void;
-    featureStepId: string;
+    scenarioStepId: string;
     selectedTokenOption?: string;
   }
 
@@ -10,12 +10,12 @@ export default function TokenSelectInput({
     tokenKey,
     tokenOptions, 
     selectedTokenOption, 
-    featureStepId,
+    scenarioStepId,
     onSelectedOptionChange 
 }: TokenSelectInputProps) {
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        onSelectedOptionChange(featureStepId, tokenKey, e.target.value);
+        onSelectedOptionChange(scenarioStepId, tokenKey, e.target.value);
     };
 
     return (

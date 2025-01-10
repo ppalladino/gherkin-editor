@@ -15,22 +15,22 @@ export interface StepTemplate {
     template: string;
 }
 
-export interface FeatureStep {
+export interface ScenarioStep {
     id: string;
     stepTemplateId: string;
 }
 
-export interface FeatureStepTokenValue {
+export interface ScenarioStepTokenValue {
     stepId: string;
     tokenKey: string;
     tokenValue: string;
 }
 
-export interface Feature {
+export interface Scenario {
     id: string;
     title: string;
-    steps: FeatureStep[];
-    stepTokenValues: FeatureStepTokenValue[];
+    steps: ScenarioStep[];
+    stepTokenValues: ScenarioStepTokenValue[];
 }
 
 const stepTokenOptions: StepTokenOptions[] = [
@@ -67,13 +67,13 @@ function findByKey<T extends { key: string }>(list: T[], key: string): T | undef
     return list.find(item => item.key === key);
 }
 
-function findFeatureStepTokenValue(stepTokenValues: FeatureStepTokenValue[], stepId: string, tokenKey: string): string | undefined {
+function findScenarioStepTokenValue(stepTokenValues: ScenarioStepTokenValue[], stepId: string, tokenKey: string): string | undefined {
     return stepTokenValues.find(item => item.stepId === stepId && item.tokenKey === tokenKey)?.tokenValue;
 }
 
-let sampleFeature: Feature = {
-    id: "sampleFeature1",
-    title: "Sample Feature 1",
+let sampleScenario: Scenario = {
+    id: "sampleScenario1",
+    title: "Sample Scenario 1",
     stepTokenValues: [
         {stepId: "step1", tokenKey: "role", tokenValue: "EDITOR"}
     ],
@@ -87,24 +87,24 @@ let sampleFeature: Feature = {
     ]
 }
 
-export default function FeatureEditor() {
+export default function ScenarioEditor() {
 
-    const [feature, setFeature] = useState<Feature>(sampleFeature);
+    const [scenario, setScenario] = useState<Scenario>(sampleScenario);
 
     const handleTokenValueChange = (
-        featureTemplateStepId: string,
+        scenarioTemplateStepId: string,
         tokenId: string,
         tokenValue: string
       ) => {
         // Use a functional state update if you're storing `sampleFeature` in React state:
-        setFeature((prevFeature) => {
+        setScenario((prevScenario) => {
           // Clone the array (for immutability)
-          const updatedStepTokenValues = [...prevFeature.stepTokenValues];
+          const updatedStepTokenValues = [...prevScenario.stepTokenValues];
       
           // Find index of existing entry
           const existingIndex = updatedStepTokenValues.findIndex(
             (item) =>
-              item.stepId === featureTemplateStepId &&
+              item.stepId === scenarioTemplateStepId &&
               item.tokenKey === tokenId
           );
       
@@ -117,23 +117,23 @@ export default function FeatureEditor() {
           } else {
             // Add a new entry
             updatedStepTokenValues.push({
-              stepId: featureTemplateStepId,
+              stepId: scenarioTemplateStepId,
               tokenKey: tokenId,
               tokenValue: tokenValue,
             });
           }
       
           return {
-            ...prevFeature,
+            ...prevScenario,
             stepTokenValues: updatedStepTokenValues,
           };
         });
       };
 
     const renderStep = (
-        step: FeatureStep, 
+        step: ScenarioStep, 
         stepTokenOptions: StepTokenOptions[], 
-        feature: Feature
+        scenario: Scenario
     ) => {
         const stepTemplate = findById(stepTemplates, step.stepTemplateId);
 
@@ -153,7 +153,7 @@ export default function FeatureEditor() {
                 return <span key={index}>{segment}</span>;
             } else {
                 const [tokenKey, inputType, tokenConstraint] = segment.split(":");
-                const tokenValue = findFeatureStepTokenValue(feature.stepTokenValues, step.id, tokenKey) ?? undefined;
+                const tokenValue = findScenarioStepTokenValue(scenario.stepTokenValues, step.id, tokenKey) ?? undefined;
 
                 switch (inputType) {
                     case "select":
@@ -168,7 +168,7 @@ export default function FeatureEditor() {
                             tokenKey={tokenKey} 
                             tokenOptions={options} 
                             selectedTokenOption={tokenValue} 
-                            featureStepId={step.id}
+                            scenarioStepId={step.id}
                             onSelectedOptionChange={handleTokenValueChange} 
                         />;
                     case "text":
@@ -177,7 +177,7 @@ export default function FeatureEditor() {
                             tokenKey={tokenKey} 
                             tokenValueConstraint={tokenConstraint}
                             tokenValue={tokenValue}
-                            featureStepId={step.id}
+                            scenarioStepId={step.id}
                             onTokenValueChange={handleTokenValueChange} 
                         />
                     default:
@@ -189,11 +189,11 @@ export default function FeatureEditor() {
           return <div>{rendered}</div>;
     }
 
-    const renderFeature = (feature: Feature ) => {
-        return feature.steps.reduce<JSX.Element[]>((acc, step) => {
+    const renderScenario = (scenario: Scenario ) => {
+        return scenario.steps.reduce<JSX.Element[]>((acc, step) => {
           acc.push(
             <React.Fragment key={step.id}>
-              {renderStep(step, stepTokenOptions, feature)}<br />
+              {renderStep(step, stepTokenOptions, scenario)}<br />
             </React.Fragment>
           );
           return acc;
@@ -202,8 +202,8 @@ export default function FeatureEditor() {
 
     return (
         <div>
-            <h2>Feature Editor</h2>
-            {renderFeature(feature)} 
+            <h2>Scenario Editor</h2>
+            {renderScenario(scenario)} 
         </div>
     )
 }
