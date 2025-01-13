@@ -1,4 +1,4 @@
-import ScenarioEditor from "@/_components/ScenarioEditor";
+import ScenarioEditor from "@/app/scenarios/_components/ScenarioEditor";
 
 export default function Features() {
     return (

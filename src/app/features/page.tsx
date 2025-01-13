@@ -1,16 +1,18 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { getAllFeatures, Item } from '@/_services/'
+import { Table, Heading } from "@chakra-ui/react"
+import { Feature } from '@/_types'
+import { getAllFeatures } from '@/_services/'
 
 export default function Features() {
-    const [items, setItems] = useState<Item[]>([]);
+    const [features, setFeatures] = useState<Feature[]>([]);
 
     useEffect(() => {
         const loadAllFeatures = async () => {
           try {
             const data = await getAllFeatures();
-            setItems(data);
+            setFeatures(data);
           } catch (error) {
             console.error(error);
           }
@@ -19,18 +21,25 @@ export default function Features() {
       }, []);
     
     return (
-      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-        <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-          <h1>Welcome to the Features Page</h1>
-          <h1>Items</h1>
-            <ul>
-                {items.map(item => (
-                <li key={item.id}>{item.name}</li>
-                ))}
-            </ul>
-        </main>
-        <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        </footer>
+      <div>
+          <Table.Root size="sm">
+            <Table.Header>
+              <Table.Row>
+                <Table.ColumnHeader>Product</Table.ColumnHeader>
+                <Table.ColumnHeader>Category</Table.ColumnHeader>
+                <Table.ColumnHeader textAlign="end">Price</Table.ColumnHeader>
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {features.map((feature) => (
+                <Table.Row key={feature.id}>
+                  <Table.Cell>{feature.name}</Table.Cell>
+                  <Table.Cell>Blah</Table.Cell>
+                  <Table.Cell textAlign="end">Blurg</Table.Cell>
+                </Table.Row>
+              ))}
+            </Table.Body>
+          </Table.Root>
       </div>
     );
 }
