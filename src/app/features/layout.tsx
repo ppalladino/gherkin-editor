@@ -1,4 +1,4 @@
-import SecondaryNav from "@/_components/SecondaryNav";
+import FeaturesNav from "./_components/FeaturesNav";
 
 export default function FeaturesLayout({
   children,
@@ -7,8 +7,7 @@ export default function FeaturesLayout({
 }) {
   return (
     <section>
-      {/* Secondary navigation (local to dashboard) */}
-      <SecondaryNav />
+      <FeaturesNav />
       <div style={{ padding: "1rem" }}>{children}</div>
     </section>
   );

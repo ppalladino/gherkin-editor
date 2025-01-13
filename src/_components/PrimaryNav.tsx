@@ -1,27 +1,31 @@
-"use client"; // because we'll have interactive nav links, etc.
+"use client";
+
+import { Text, Flex, Heading, HStack, Spacer } from "@chakra-ui/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 export default function PrimaryNav() {
+
+  const currentPath = usePathname();
+
   return (
-    <nav style={{ background: "#333", padding: "1rem" }}>
-      <ul style={{ display: "flex", gap: "1rem", listStyle: "none" }}>
-        <li>
-          <Link href="/" style={{ color: "#fff" }}>
-            Home
-          </Link>
-        </li>
-        <li>
-          <Link href="/features" style={{ color: "#fff" }}>
-            Features
-          </Link>
-        </li>
-        <li>
-          <Link href="/about" style={{ color: "#fff" }}>
-            About
-          </Link>
-        </li>
-      </ul>
-    </nav>
+    <React.Fragment>
+      <Flex as="nav" p="10px" alignItems="center" borderBottom="1px solid">
+        <Heading as="h1" size="2xl" color="brand.100">Gherkin Editor</Heading>
+        <Spacer />
+        <HStack>
+            <Link className={currentPath == "/" ? "active" : ""} href="/">
+              <Text p="5px" fontSize="sm">Home</Text>
+            </Link>
+            <Link href="/scenarios" className={currentPath == "/scenarios" ? "active" : ""}>
+              <Text p="5px" fontSize="sm">Scenarios</Text>
+            </Link>
+            <Link className={currentPath == "/features" ? "active" : ""} href="/features">
+              <Text p="5px" fontSize="sm">Features</Text>
+            </Link>
+        </HStack>
+      </Flex>
+    </React.Fragment>
   );
 }
