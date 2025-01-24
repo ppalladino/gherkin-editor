@@ -1,16 +1,89 @@
-import { Scenario, Feature, StepTemplate } from "@/_types";
+import { Scenario, Feature, StepTemplate, StepTokenOptions, StepTemplateTypes, TokenStatus } from "@/_types";
+
+export const getStepTemplate = async (id: string): Promise<StepTemplate> => {
+    const response = await fetch('/api/step-template/' + id);
+    const responseJson = await response.json()
+    return responseJson.data.stepTemplate;
+};
 
 export const getAllStepTemplates = async (): Promise<StepTemplate[]> => {
-    const stepTemplates = [
-        {id: "stepTemplate1", title: "GIVEN I am a <role>", template: "GIVEN I am a [role:select:roles]"},
-        {id: "stepTemplate2", title: "WHEN I navigate to <route>", template: "[action:select:step-actions] I navigate to [route:select:routes]"},
-        {id: "stepTemplate3", title: "WHEN I input <text> into <field>", template: "[action:select:step-actions] I input [name:text:string] into the [ui-id:select:component-ids] field"},
-        {id: "stepTemplate4", title: "WHEN I click <component>", template: "[action:select:step-actions] I click [ui-id:select:component-ids] button"},
-        {id: "stepTemplate5", title: "WHEN I wait <seconds>", template: "[action:select:step-actions] I wait [wait-time:text:number] seconds"},
-        {id: "stepTemplate6", title: "THEN I see <component>", template: "[action:select:step-outcomes] I see [ui-id:select:component-ids] component"},
-    ]
-    return stepTemplates;
+    const response = await fetch('/api/step-template/all');
+    const responseJson = await response.json()
+    return responseJson.data.stepTemplates;
 };
+
+export const seedStepTemplates = async (): Promise<string> => {
+    const response = await fetch('/api/step-template/seed',  {method: 'POST'})
+    const message = response.json()
+    return message
+}
+
+export const deleteAllStepTemplates = async (): Promise<any> => {
+    const response = await fetch('/api/step-template/all',  {method: 'DELETE'})
+    return response.json()
+}
+
+export const getTextEmbedding = async (text: string): Promise<number[]> => {
+   
+
+    // fetch('/api/text-embedding')               // e.g., /api/hello
+    //   .then((res) => res.json())
+    //   .then((json) => console.log(json));
+}
+
+
+export const getAllStepTokenOptions = async (): Promise<StepTokenOptions[]> => {
+    const stepTokenOptions: StepTokenOptions[] = [
+        {
+            id: "stepTokenValues1", 
+            key: "roles", 
+            options: [
+                {status: TokenStatus.PUBLISHED, value: "UNAUTHORIZED"}, 
+                {status: TokenStatus.PUBLISHED, value:"ADMIN"}, 
+                {status: TokenStatus.PUBLISHED, value:"EDITOR"}, 
+                {status: TokenStatus.PUBLISHED, value:"VIEWER"}
+            ]},
+        {
+            id: "stepTokenValues2", 
+            key: "routes", options: [
+                {status: TokenStatus.PUBLISHED, value:"HOME"}, 
+                {status: TokenStatus.PUBLISHED, value:"STANDARD_SEARCH"}, 
+                {status: TokenStatus.PUBLISHED, value:"CONTACT"}
+            ]},
+        {
+            id: "stepTokenValues3", 
+            key: "step-preconditions", 
+            options: [
+                {status: TokenStatus.PUBLISHED, value:"GIVEN"}, 
+                {status: TokenStatus.PUBLISHED, value:"AND"}
+            ]},
+        {
+            id: "stepTokenValues4", 
+            key: "step-actions", options: [
+                {status: TokenStatus.PUBLISHED, value:"WHEN"}, 
+                {status: TokenStatus.PUBLISHED, value:"AND"}
+            ]},
+        {
+            id: "stepTokenValues5", 
+            key: "step-results", 
+            options: [
+                {status: TokenStatus.PUBLISHED, value:"THEN"}, 
+                {status: TokenStatus.PUBLISHED, value:"AND"}
+            ]},
+        {
+            id: "stepTokenValues6", 
+            key: "component-ids", 
+            options: [
+                {status: TokenStatus.PUBLISHED, value:"STANDARD_SEARCH_VALUE"},
+                {status: TokenStatus.PUBLISHED, value:"STANDARD_SEARCH_SUBMIT"},
+                {status: TokenStatus.PUBLISHED, value:"STANDARD_SEARCH_RESULTS"},
+                {status: TokenStatus.PUBLISHED, value:"STANDARD_EDITOR_TITLE"},
+                {status: TokenStatus.PUBLISHED, value:"STANDARD_EDITOR_SUBTITLE"}
+          ]
+        },
+    ]
+    return stepTokenOptions;
+}
 
 export const getAllFeatures = async (): Promise<Feature[]> => {
     return [

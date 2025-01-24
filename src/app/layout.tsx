@@ -1,28 +1,26 @@
 "use client"
 
-// import "./globals.css"; 
-
+import { Flex } from "@chakra-ui/react";
 import { Provider } from "@/components/ui/provider"
 import PrimaryNav from "@/_components/PrimaryNav";
-
-import { Button } from "@/components/ui/button"
-import { Container, Heading, HStack, Text } from "@chakra-ui/react"
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
-        <Provider>
-          <Container>
-            <PrimaryNav />
-            <main>{children}</main>
-          </Container>
-        </Provider>
-      </body>
-    </html>
-  );
+    return (
+        <html lang="en" suppressHydrationWarning>
+            <body>
+                <Provider>
+                    <Flex direction="column" minH="100vh">
+                        <PrimaryNav />
+                        <Flex flex="1" p={4}>
+                            {children}
+                        </Flex>
+                    </Flex>
+                </Provider>
+            </body>
+        </html>
+    );
 }

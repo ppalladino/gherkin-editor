@@ -2,7 +2,16 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, create local .env for local config
+
+```bash
+touch .env.local
+```
+
+add your open ai api key in the in file ex:
+NEXT_PUBLIC_OPEN_AI_KEY = "<YOUR API KEY>"
+
+Second, run the development server:
 
 ```bash
 npm run dev

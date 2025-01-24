@@ -1,50 +1,102 @@
 'use client'
 
-import React, { useState } from "react";
-import TokenSelectInput from "../../../../_components/TokenSelectInput";
-import TokenTextInput from "../../../../_components/TokenTextInput";
-import { Scenario, ScenarioStep, ScenarioStepTokenValue, StepTemplate, StepTokenOptions, DragTypes } from "@/_types";
-import { findById } from "@/_lib/utils";
-import { Heading, Flex, Box, Text } from "@chakra-ui/react";
-import StepTemplateBank from "./StepTemplateBank";
-import StepTemplateDropZone from "./StepDropZone";
+import React, { useState, useEffect } from "react";
+import { 
+    Flex,
+    FlexProps,
+    Box, 
+    Tabs,
+    Button
+} from "@chakra-ui/react";
+import { Scenario, StepTemplate, StepTokenOptions, DragTypes } from "@/_types";
+// import { reorderSteps } from "@/_lib/scenario";
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { v4 as uuidv4 } from 'uuid';
+import { findById, reorderArray } from "@/_lib/utils";
 
+import { FaSortAmountDown, FaMagic, FaRecycle } from "react-icons/fa"
+import { findClosestMatchingStepTemplate, orderByBestMatchingStepTemplates } from "@/_lib/stepTemplate";
+import ClearableSearchInput from "@/_components/ClearableSearchInput";
+import StepTemplateBank from "./_components/StepTemplateBank";
+import StepTemplateDropZone from "./_components/StepDropZone";
+import SemanticStepSorter from "./_components/SemanticStepSorter";
+import ConvertTextToSteps from "./_components/ConvertTextToSteps";
+import Step from "./_components/Step";
+import { FaSadTear } from "react-icons/fa";
 
-const stepTokenOptions: StepTokenOptions[] = [
-    {id: "stepTokenValues1", key: "roles", options: ["UNAUTHORIZED", "ADMIN", "EDITOR", "VIEWER"]},
-    {id: "stepTokenValues2", key: "routes", options: ["HOME", "STANDARD_SEARCH", "CONTACT"]},
-    {id: "stepTokenValues3", key: "step-conditions", options: ["GIVEN"]},
-    {id: "stepTokenValues4", key: "step-actions", options: ["WHEN", "AND"]},
-    {id: "stepTokenValues5", key: "step-outcomes", options: ["THEN", "AND"]},
-    {id: "stepTokenValues6", key: "component-ids", options: [
-        "STANDARD_SEARCH_VALUE",
-        "STANDARD_SEARCH_SUBMIT",
-        "STANDARD_SEARCH_RESULTS",
-        "STANDARD_EDITOR_TITLE",
-        "STANDARD_EDITOR_SUBTITLE"
-      ]
-    },
-]
-
-function findByKey<T extends { key: string }>(list: T[], key: string): T | undefined {
-    return list.find(item => item.key === key);
-}
-
-function findScenarioStepTokenValue(stepTokenValues: ScenarioStepTokenValue[], stepId: string, tokenKey: string): string | undefined {
-    return stepTokenValues.find(item => item.stepId === stepId && item.tokenKey === tokenKey)?.tokenValue;
-}
-
-interface ScenarioEditorProps {
+interface ScenarioEditorProps extends FlexProps{
   scenario: Scenario;
   stepTemplates: StepTemplate[];
+  stepTokenOptions: StepTokenOptions[];
 }
 
-export default function ScenarioEditor({scenario: _scenario, stepTemplates}: ScenarioEditorProps) {
+export default function ScenarioEditor({
+    scenario: _scenario, 
+    stepTemplates, 
+    stepTokenOptions,
+    ...rest
+}: ScenarioEditorProps) {
 
     const [scenario, setScenario] = useState<Scenario>(_scenario);
+
+    const handleTokenValueChange = (
+        scenarioTemplateStepId: string,
+        tokenId: string,
+        tokenValue: string
+      ) => {
+        // Use a functional state update if you're storing `sampleFeature` in React state:
+        setScenario((prevScenario) => {
+          // Clone the array (for immutability)
+          const updatedStepTokenValues = [...prevScenario.stepTokenValues];
+      
+          // Find index of existing entry
+          const existingIndex = updatedStepTokenValues.findIndex(
+            (item) =>
+              item.stepId === scenarioTemplateStepId &&
+              item.tokenKey === tokenId
+          );
+      
+          if (existingIndex > -1) {
+            // Update the existing entry
+            updatedStepTokenValues[existingIndex] = {
+              ...updatedStepTokenValues[existingIndex],
+              tokenValue: tokenValue,
+            };
+          } else {
+            // Add a new entry
+            updatedStepTokenValues.push({
+              stepId: scenarioTemplateStepId,
+              tokenKey: tokenId,
+              tokenValue: tokenValue,
+            });
+          }
+      
+          return {
+            ...prevScenario,
+            stepTokenValues: updatedStepTokenValues,
+          };
+        });
+    };
+
+    const handleDelete = (stepId: string) => {
+        const newSteps = scenario.steps.filter(step => step.id !== stepId);
+        setScenario((prevScenario) => ({
+            ...prevScenario,
+            steps: newSteps,
+        }));
+    }
+
+    const handleAppendStepTemplates = (stepTemplates: StepTemplate[]) => {
+        const newSteps = [
+            ...scenario.steps,
+            ...stepTemplates.map((stepTemplate) => ({id: uuidv4(), stepTemplateId: stepTemplate.id}))
+        ];
+        setScenario((prevScenario) => ({
+            ...prevScenario,
+            steps: newSteps,
+        }));
+    }
 
     const handleDrop = (dropIndex: number, type: string, id: string) => {
         if (type === DragTypes.STEP_TEMPLATE) {
@@ -57,45 +109,138 @@ export default function ScenarioEditor({scenario: _scenario, stepTemplates}: Sce
                 ...prevScenario,
                 steps: newSteps,
             }));
+        } else if (type === DragTypes.SCENARIO_STEP) {
+
+            // Reorder existing steps
+            const currentIndex = scenario.steps.findIndex(step => step.id === id);
+            if (currentIndex === -1) {
+                console.error(`Step with id ${id} not found.`);
+                return;
+            }
+
+            // If the dropIndex is the same as currentIndex or adjacent appropriately, no need to reorder
+            if (currentIndex === dropIndex || currentIndex === dropIndex - 1) {
+                // No change needed
+                return;
+            }
+
+            // Reorder the steps
+            const reorderedSteps = reorderArray(scenario.steps, currentIndex, dropIndex);
+
+            setScenario((prevScenario) => ({
+                ...prevScenario,
+                steps: reorderedSteps,
+            }));
         }
     }
 
-    let dropIndex = 0;
+    const getEmptyDropZone = () => {
+        return (
+            <StepTemplateDropZone 
+                dropIndex={0}
+                onDrop={handleDrop}
+                flex="1"
+                keepOpen={true}
+            >
+                <Flex 
+                    direction="column"
+                    align="center"
+                    color="brand.300"
+                    textAlign="center"
+                    justify={"center"}
+                    minH="100%"
+                    minW="100%"
+                >
+                    Scenario is Empty!<FaSadTear size={40}/>Drag a Step Here... 
+                </Flex>
+            </StepTemplateDropZone>
+        )
+    }
+
+    let dropIndex = -1;
 
     return (
-        <div>
+        <Flex
+            {...rest}
+            direction="column"
+            flex="1"
+        >
             <DndProvider backend={HTML5Backend}>
-                <Flex direction={{ base: 'column', md: 'row' }} minHeight="100vh">
+                <Flex direction="row"  flex="1">
                     {/* Left Column */}
-                    <Box flex="1" p={4}>
-                        <Text fontSize="xl" fontWeight="bold">Step Templates</Text>
-                        <StepTemplateBank stepTemplates={stepTemplates}/>
-                    </Box>
-
+                    <Flex flex="1.5" p={4} direction="column">
+                        <Tabs.Root variant="plain" defaultValue="filter-steps" flex="1">
+                            <Tabs.List bg="bg.muted" rounded="l3" backgroundColor={"brand.400"}>
+                                <Tabs.Trigger value="filter-steps">
+                                    <FaSortAmountDown /> 
+                                    Semantic Sort
+                                </Tabs.Trigger>
+                                <Tabs.Trigger value="convert-text">
+                                    <FaMagic />
+                                    Convert Text
+                                </Tabs.Trigger>
+                                <Tabs.Trigger value="recycle-scenario">
+                                    <FaRecycle />
+                                    Copy Scenario
+                                </Tabs.Trigger>
+                                <Tabs.Indicator 
+                                    backgroundColor="brand.300"
+                                    rounded="l2" 
+                                />
+                            </Tabs.List>
+                            <Tabs.Content value="filter-steps" flex="1">
+                                <SemanticStepSorter stepTemplates={stepTemplates} />
+                            </Tabs.Content>
+                            <Tabs.Content value="convert-text" flex="1">
+                                <ConvertTextToSteps 
+                                    stepTemplates={stepTemplates} 
+                                    onAppendSuggestions={(stepTemplates) => handleAppendStepTemplates(stepTemplates)}
+                                />
+                            </Tabs.Content>
+                            <Tabs.Content value="recycle-scenario" flex="1">
+                                Re-use an existing scenario
+                            </Tabs.Content>
+                        </Tabs.Root>
+                    </Flex>
+                    
                     {/* Right Column */}
-                    <Box flex="2" p={4}>
-                        <Text fontSize="xl" fontWeight="bold">Scenario</Text>
-                        <StepTemplateDropZone 
-                            dropIndex={dropIndex}
-                            onDrop={handleDrop}
-                        />
-                        {
-                            scenario.steps.map((step) => {
-                                dropIndex++;
-                                return (
-                                    <React.Fragment key={step.id}>
-                                        {step.stepTemplateId}<br />
-                                        <StepTemplateDropZone 
-                                            dropIndex={dropIndex}
-                                            onDrop={handleDrop}
-                                        />
-                                    </React.Fragment>
-                                )
-                            })
+                    <Flex flex="2" p={4} direction="column">
+                        { scenario.steps.length === 0  
+                            ? getEmptyDropZone() 
+                            : <Box p={4} border="2px dashed" borderColor="brand.400" rounded="md" flex="1">
+                                {
+                                    scenario.steps.map((step) => {
+                                        dropIndex++;
+                                        return (
+                                            <React.Fragment key={step.id}>
+                                                <StepTemplateDropZone 
+                                                    dropIndex={dropIndex}
+                                                    onDrop={handleDrop}
+                                                />
+                                                <Step 
+                                                    scenario={scenario}
+                                                    step={step} 
+                                                    stepTemplate={findById(stepTemplates, step.stepTemplateId)} 
+                                                    stepTokenOptions={stepTokenOptions}
+                                                    onDelete={handleDelete}
+                                                    onTokenValueChange={handleTokenValueChange}
+                                                />
+                                            </React.Fragment>
+                                        )
+                                    })
+                                }
+                                <StepTemplateDropZone 
+                                    dropIndex={dropIndex + 1}
+                                    onDrop={handleDrop}
+                                />
+                            </Box>
                         }
-                    </Box>   
-                </Flex>
+                        <Flex mt="20px" justify="right">
+                            <Button >Save Scenario</Button>
+                        </Flex>
+                    </Flex>   
+                </Flex>   
             </DndProvider>
-        </div>
+        </Flex>
     )
 }
