@@ -5,6 +5,10 @@ import { GetStepTemplatesResponse } from '@/_types'
 import { getAllStepTemplates, deleteAllStepTemplates } from '@/_lib/db'
  
 export async function GET() {
+    // Inline delay function
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+    await delay(500);
+
     const stepTemplates = getAllStepTemplates()
 
     return NextResponse.json<GetStepTemplatesResponse>({

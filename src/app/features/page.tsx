@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Heading } from "@chakra-ui/react"
 import { Feature } from '@/_types'
-import { getAllFeatures } from '@/_services/'
+import { getAllFeatures } from '@/_services/_index'
 
 export default function Features() {
     const [features, setFeatures] = useState<Feature[]>([]);

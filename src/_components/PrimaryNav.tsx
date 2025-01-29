@@ -20,6 +20,9 @@ export default function PrimaryNav() {
                 <Link href="/step-templates" className={currentPath == "/step-templates" ? "active" : ""}>
                     <Text p="5px" fontSize="sm">Step Templates</Text>
                 </Link>
+                <Link href="/step-token-options" className={currentPath == "/step-token-options" ? "active" : ""}>
+                    <Text p="5px" fontSize="sm">Step Token Options</Text>
+                </Link>
                 <Link href="/scenarios" className={currentPath == "/scenarios" ? "active" : ""}>
                     <Text p="5px" fontSize="sm">Scenarios</Text>
                 </Link>

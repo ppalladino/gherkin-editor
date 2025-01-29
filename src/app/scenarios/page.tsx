@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Table, Flex, Heading, Spacer, HStack, Button, Box } from "@chakra-ui/react"
-import { getAllScenarios, getAllFeatures, getTextEmbedding, getAllStepTemplates } from '@/_services';
+import { getAllScenarios, getAllFeatures, getTextEmbedding } from '@/_services/_index';
+import { useGetAllStepTemplatesQuery } from '@/_services';
 import { Feature, Scenario } from '@/_types';
 import { findById } from "@/_lib/utils";
 
@@ -34,12 +35,10 @@ export default function ScenariosList() {
           }
         };
         loadAllScenarios();
-
-        getAllStepTemplates()
       }, []);
 
     return (
-      <Box minH={"100%"}>
+      <Flex flex="1" direction="column">
         <Flex as="nav" p="10px" alignItems="center">
           <Heading as="h4">Scenario List</Heading>
           <Spacer />
@@ -75,6 +74,6 @@ export default function ScenariosList() {
               ))}
             </Table.Body>
           </Table.Root>
-      </Box>
+      </Flex>
     );
 }

@@ -73,3 +73,23 @@ export interface GetStepTemplatesResponse extends ReponseBase {
     }
 }
 
+export interface GetStepTemplateResponse extends ReponseBase {
+    data: {
+        stepTemplate: StepTemplate;
+    }
+}
+
+export interface GetAllStepTokenOptionsResponse extends ReponseBase {
+    data: {
+        stepTokenOptions: StepTokenOptions[];
+    }
+}
+
+export interface GetStepTokenOptionsResponse extends ReponseBase {
+    data: {
+        stepTokenOptions: StepTokenOptions;
+    }
+}
+
+
+

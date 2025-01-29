@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { Heading, Flex } from "@chakra-ui/react";
 import { Scenario, StepTemplate, StepTokenOptions } from "@/_types";
-import { getAllStepTemplates, getAllStepTokenOptions } from "@/_services";
+import { useGetAllStepTemplatesQuery, useGetAllStepTokenOptionsQuery } from "@/_services";
 import ScenarioEditor from "@/app/scenarios/_components/ScenarioEditor";
 import { v4 as uuidv4 } from 'uuid';
+import Spinner from "@/_components/Spinner";
 
 const newScenario: Scenario = {
   id: uuidv4(),
@@ -16,39 +17,30 @@ const newScenario: Scenario = {
 }
 
 export default function CreateScenarioPage() {
-    const [stepTemplates, setStepTemplates] = useState<StepTemplate[]>([]);
-    const [stepTokenOptions, setStepTokenOptions] = useState<StepTokenOptions[]>([]);
+    const { data: stepTemplatesData, error: stepTemplatesError, isLoading:  isStepTemplatesLoading } = useGetAllStepTemplatesQuery(undefined)
+    const { data: stepTokenOptionsData, error: stepTokenOptionsError, isLoading: isStepTokenOptionsLoading } = useGetAllStepTokenOptionsQuery(undefined)
 
-    useEffect(() => {
-      const loadAllStepTemplates = async () => {
-        try {
-          const data = await getAllStepTemplates();
-          setStepTemplates(data);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      loadAllStepTemplates();
-
-      const loadAllStepTokenOptions = async () => {
-        try {
-          const data = await getAllStepTokenOptions();
-          setStepTokenOptions(data);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      loadAllStepTokenOptions();
-    }, []);
+    let isLoading = isStepTemplatesLoading || isStepTokenOptionsLoading
+    let isData = stepTemplatesData && stepTokenOptionsData
+    let isError = stepTemplatesError || stepTokenOptionsError
 
     return (
-        <Flex flex="1" direction="column">
-            <Heading>Create Scenario</Heading>
-            <ScenarioEditor 
-                scenario={newScenario} 
-                stepTemplates={stepTemplates}
-                stepTokenOptions={stepTokenOptions}
-            />
-        </Flex>
+        <>
+            { isLoading && <Spinner /> } 
+
+            {
+                isData && 
+                <Flex flex="1" direction="column">
+                    <Heading>Create Scenario</Heading>
+                    <ScenarioEditor 
+                        scenario={newScenario} 
+                        stepTemplates={stepTemplatesData.data.stepTemplates}
+                        stepTokenOptions={stepTokenOptionsData.data.stepTokenOptions}
+                    />
+                </Flex>
+            }
+
+            {isError && <div>stepTemplatesError: {JSON.stringify(stepTemplatesError)}, stepTokenOptionsError: {JSON.stringify(stepTokenOptionsError)}</div>}
+        </>     
     );
 }

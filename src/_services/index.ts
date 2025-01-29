@@ -1,116 +1,41 @@
-import { Scenario, Feature, StepTemplate, StepTokenOptions, StepTemplateTypes, TokenStatus } from "@/_types";
+// Need to use the React-specific entry point to import createApi
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import type { StepTemplate, StepTokenOptions } from '@/_types'
+import { getStepTemplate } from './_index'
 
-export const getStepTemplate = async (id: string): Promise<StepTemplate> => {
-    const response = await fetch('/api/step-template/' + id);
-    const responseJson = await response.json()
-    return responseJson.data.stepTemplate;
-};
+// Define a service using a base URL and expected endpoints
+export const gherkinEditorApi = createApi({
+  reducerPath: 'gherkinEditorApi',
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/api/' }),
+  endpoints: (builder) => ({
+        getAllStepTemplates: builder.query<StepTemplate[], undefined>({
+            query: () => `step-templates/all`,
+        }),
+        getStepTemplate: builder.query<StepTemplate, string>({
+            query: (id) => `step-templates/${id}`,
+        }),
+        patchStepTemplate: builder.mutation<StepTemplate, Partial<StepTemplate> & Pick<StepTemplate, 'id'>>({
+            query: ({ ...stepTemplate }) => ({
+                url: `step-templates`,
+                method: 'PATCH',
+                body: stepTemplate,
+            }),
+        }),
+        getAllStepTokenOptions: builder.query<StepTokenOptions[], undefined>({
+            query: () => `step-token-options/all`,
+        }),
+        getStepTokenOptions: builder.query<StepTokenOptions, string>({
+            query: (id) => `step-token-options/${id}`,
+        }),
+    }),
+})
 
-export const getAllStepTemplates = async (): Promise<StepTemplate[]> => {
-    const response = await fetch('/api/step-template/all');
-    const responseJson = await response.json()
-    return responseJson.data.stepTemplates;
-};
-
-export const seedStepTemplates = async (): Promise<string> => {
-    const response = await fetch('/api/step-template/seed',  {method: 'POST'})
-    const message = response.json()
-    return message
-}
-
-export const deleteAllStepTemplates = async (): Promise<any> => {
-    const response = await fetch('/api/step-template/all',  {method: 'DELETE'})
-    return response.json()
-}
-
-export const getTextEmbedding = async (text: string): Promise<number[]> => {
-   
-
-    // fetch('/api/text-embedding')               // e.g., /api/hello
-    //   .then((res) => res.json())
-    //   .then((json) => console.log(json));
-}
-
-
-export const getAllStepTokenOptions = async (): Promise<StepTokenOptions[]> => {
-    const stepTokenOptions: StepTokenOptions[] = [
-        {
-            id: "stepTokenValues1", 
-            key: "roles", 
-            options: [
-                {status: TokenStatus.PUBLISHED, value: "UNAUTHORIZED"}, 
-                {status: TokenStatus.PUBLISHED, value:"ADMIN"}, 
-                {status: TokenStatus.PUBLISHED, value:"EDITOR"}, 
-                {status: TokenStatus.PUBLISHED, value:"VIEWER"}
-            ]},
-        {
-            id: "stepTokenValues2", 
-            key: "routes", options: [
-                {status: TokenStatus.PUBLISHED, value:"HOME"}, 
-                {status: TokenStatus.PUBLISHED, value:"STANDARD_SEARCH"}, 
-                {status: TokenStatus.PUBLISHED, value:"CONTACT"}
-            ]},
-        {
-            id: "stepTokenValues3", 
-            key: "step-preconditions", 
-            options: [
-                {status: TokenStatus.PUBLISHED, value:"GIVEN"}, 
-                {status: TokenStatus.PUBLISHED, value:"AND"}
-            ]},
-        {
-            id: "stepTokenValues4", 
-            key: "step-actions", options: [
-                {status: TokenStatus.PUBLISHED, value:"WHEN"}, 
-                {status: TokenStatus.PUBLISHED, value:"AND"}
-            ]},
-        {
-            id: "stepTokenValues5", 
-            key: "step-results", 
-            options: [
-                {status: TokenStatus.PUBLISHED, value:"THEN"}, 
-                {status: TokenStatus.PUBLISHED, value:"AND"}
-            ]},
-        {
-            id: "stepTokenValues6", 
-            key: "component-ids", 
-            options: [
-                {status: TokenStatus.PUBLISHED, value:"STANDARD_SEARCH_VALUE"},
-                {status: TokenStatus.PUBLISHED, value:"STANDARD_SEARCH_SUBMIT"},
-                {status: TokenStatus.PUBLISHED, value:"STANDARD_SEARCH_RESULTS"},
-                {status: TokenStatus.PUBLISHED, value:"STANDARD_EDITOR_TITLE"},
-                {status: TokenStatus.PUBLISHED, value:"STANDARD_EDITOR_SUBTITLE"}
-          ]
-        },
-    ]
-    return stepTokenOptions;
-}
-
-export const getAllFeatures = async (): Promise<Feature[]> => {
-    return [
-        { id: 'b8b0d3bd-4678-4135-94eb-f4b96831d7fb', name: 'Feature 1' },
-        { id: 'a78c023f-bc55-411e-aa2d-f146aeaa04e6', name: 'Feature 2' },
-        { id: '413185eb-2959-4b58-95ac-0751e9ab43c3', name: 'Feature 3' }
-    ]
-};
-
-export const getAllScenarios = async (): Promise<Scenario[]> => {
-    const scenarios = [
-            {
-            id: "b50b6c89-78b7-4bc3-b82e-6b5020d51201",
-            title: "Sample Scenario 1",
-            featureId: "b8b0d3bd-4678-4135-94eb-f4b96831d7fb",
-            stepTokenValues: [
-                {stepId: "0c1a9a53-1db5-4e1e-8711-d0e39cedf46b", tokenKey: "role", tokenValue: "EDITOR"}
-            ],
-            steps: [
-                {id: "0c1a9a53-1db5-4e1e-8711-d0e39cedf46b", stepTemplateId: "stepTemplate1"},
-                {id: "b33941e3-8894-4e0d-8469-e29cb27185ef", stepTemplateId: "stepTemplate2"},
-                {id: "e11f0c0e-7e95-4aca-b921-c6e48c590e32", stepTemplateId: "stepTemplate3"},
-                {id: "69fc80ed-ab1e-47c5-8e8f-63327eb30ea5", stepTemplateId: "stepTemplate4"},
-                {id: "d7c1436f-b4bc-4750-b16d-0710301c1f45", stepTemplateId: "stepTemplate5"},
-                {id: "428e6dfa-a87d-45c5-b423-650006417370", stepTemplateId: "stepTemplate6"},
-            ]
-        }
-    ]
-    return scenarios;
-};
+// Export hooks for usage in functional components, which are
+// auto-generated based on the defined endpoints
+export const { 
+    useGetAllStepTemplatesQuery,
+    useGetStepTemplateQuery,
+    usePatchStepTemplateMutation,
+    useGetAllStepTokenOptionsQuery,
+    useGetStepTokenOptionsQuery
+} = gherkinEditorApi
