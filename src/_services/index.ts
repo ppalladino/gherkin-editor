@@ -1,6 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { StepTemplate, StepTokenOptions, Organization } from '@/_types'
+import type { Organization, Project, StepTemplate, StepTokenOptions } from '@/_types'
 import { getStepTemplate } from './_index'
 
 // Define a service using a base URL and expected endpoints
@@ -41,6 +41,38 @@ export const gherkinEditorApi = createApi({
             })
         }),
 
+        // PROJECTS
+
+        getProjects: builder.query<Project[], undefined>({
+            query: () => `projects`,
+        }),
+        getProject: builder.query<Project, string>({
+            query: (id) => `projects/${id}`,
+        }),
+        postProject: builder.mutation<Project, Project>({
+            query: (model) => ({
+              url: '/projects',
+              method: 'POST',
+              body: model,
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }),
+        }),
+        putProject: builder.mutation<Project, Project>({
+            query: (model) => ({
+                url: `projects/${model.id}`,
+                method: 'PUT',
+                body: model,
+            }),
+        }),
+        deleteProject: builder.mutation<{ success: boolean }, string>({
+            query: (id) => ({
+              url: `projects/${id}`,
+              method: 'DELETE',
+            })
+        }),
+
         // STEP TEMPLATES
 
         getAllStepTemplates: builder.query<StepTemplate[], undefined>({
@@ -77,6 +109,12 @@ export const {
     usePutOrganizationMutation,
     usePostOrganizationMutation,
     useDeleteOrganizationMutation,
+    // PROJECTS
+    useGetProjectsQuery,
+    useGetProjectQuery,
+    usePutProjectMutation,
+    usePostProjectMutation,
+    useDeleteProjectMutation,
     // STEP TEMPLATES
     useGetAllStepTemplatesQuery,
     useGetStepTemplateQuery,

@@ -1,5 +1,6 @@
 export * from "./db"
 export * from  "./organization"
+export * from  "./project"
 
 // const initDb = (db: Database) => {
 

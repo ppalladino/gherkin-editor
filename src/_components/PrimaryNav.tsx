@@ -23,11 +23,11 @@ export default function PrimaryNav() {
             <Heading as="h1" size="2xl" color="brand.100">Gherkin Shmerkin</Heading>
             <Spacer />
             <HStack>
-                <Link href="/" className={currentPath == "/" ? "active" : ""}>
-                    <Text p="5px" fontSize="sm">Home</Text>
-                </Link>
                 <Link href="/organizations" className={currentPath.includes("/organizations") ? "active" : ""}>
                     <Text p="5px" fontSize="sm">Organizations</Text>
+                </Link>
+                <Link href="/projects" className={currentPath.includes("/projects") ? "active" : ""}>
+                    <Text p="5px" fontSize="sm">Projects</Text>
                 </Link>
                 <Link href="/step-templates" className={currentPath == "/step-templates" ? "active" : ""}>
                     <Text p="5px" fontSize="sm">Step Templates</Text>
