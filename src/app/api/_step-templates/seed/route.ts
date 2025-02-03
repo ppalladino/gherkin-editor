@@ -2,7 +2,7 @@ export const dynamic = 'force-static'
 
 import { NextResponse } from 'next/server'
 import { GetStepTemplatesResponse, StepTemplateTypes } from '@/_types'
-import { getAllStepTemplates, insertStepTemplate } from '@/_lib/db'
+import { getAllStepTemplates, insertStepTemplate } from '@/_db'
 import { getTextEmbedding } from '@/_lib/textEmbedding'
 
 const {PRECONDITION, ACTION, RESULT} = StepTemplateTypes;

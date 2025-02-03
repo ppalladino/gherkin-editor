@@ -2,7 +2,7 @@ export const dynamic = 'force-static'
 
 import { NextResponse } from 'next/server'
 import { GetStepTemplatesResponse } from '@/_types'
-import { updateStepTemplate, getStepTemplate } from '@/_lib/db'
+import { updateStepTemplate, getStepTemplate } from '@/_db'
 import { getTextEmbedding } from '@/_lib/textEmbedding'
  
 export async function PATCH(request: Request) {

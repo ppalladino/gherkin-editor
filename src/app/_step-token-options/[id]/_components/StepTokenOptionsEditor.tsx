@@ -147,7 +147,7 @@ export default function StepTokenOptionsEditor({
                             </Table.Header>
                             <Table.Body>
                                 {editedModel.options.map((option, index) => (
-                                    <Table.Row key={ index }>
+                                    <Table.Row key={ option.value }>
                                         <Table.Cell>
                                             <Input
                                                 value={option.value}

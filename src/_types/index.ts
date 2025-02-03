@@ -19,16 +19,28 @@ export enum TokenStatus {
     PUBLISHED = 'PUBLISHED',
 }
 
+export interface Organization {
+    id: string;
+    name: string;
+}
+
 export interface StepToken {
     tokenKey: string;
     inputType: StepTokenInputType;
     tokenConstraint: string;
 }
 
+export interface StepTokenOptionsValue {
+    id: string;
+    status:string;
+    value:string;
+    textEmbedding: number[];
+}
+
 export interface StepTokenOptions {
     id: string;
     key: string;
-    options: {status:string, value:string}[];
+    options: StepTokenOptionsValue[];
 }
 
 export interface StepTemplate {

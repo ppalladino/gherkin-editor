@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextResponse } from 'next/server'
 import { GetStepTokenOptionsResponse } from '@/_types'
-import { getStepTokenOptions } from '@/_lib/db'
+import { getStepTokenOptions } from '@/_db'
  
 export async function GET(
     request: Request,

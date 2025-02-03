@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { NextResponse } from 'next/server'
 import { GetStepTemplateResponse } from '@/_types'
-import { getStepTemplate } from '@/_lib/db'
+import { getStepTemplate } from '@/_db'
  
 export async function GET(
     request: Request,

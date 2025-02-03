@@ -8,12 +8,21 @@ const config = defineConfig({
             fontWeight: "500",
             color: "brand.50",
         },
-        "a.active": {
-            backgroundColor: "brand.800"
+        "a.chakra-link:hover" : {
+            color: "brand.highlight!important"
+        },
+        "a.chakra-link:focus": {
+            color: "brand.highlight!important",
+            outline: "none!important",
+            boxShadow: "none!important",
+            border: "none!important"
+        },
+        "a.active:hover": {
+            color: "brand.mutedHighlight",
         },
         "a:hover": {
             // textDecoration: "underline",    
-            color: "brand.200"
+            color: "brand.highlight"
         },
         "*::selection": {
           bg: "green.200",
@@ -23,16 +32,27 @@ const config = defineConfig({
       tokens: {
         colors: {
           brand: {
-            50: { value: "#FFFFFF" },
-            100: { value: "#D5D3E5" },
-            200: { value: "#AAA7CA" },
-            300: { value: "#807BB0" },
-            400: { value: "#554F95" },
-            500: { value: "#2b237b" },
-            600: { value: "#221C62" },
-            700: { value: "#1A154A" },
-            800: { value: "#110E31" },
-            900: { value: "#090719" },
+            50:  { value: "#F4F8F5"},
+            100: { value: "#E8F1EA"},
+            200: { value: "#C6DCCC"},
+            300: { value: "#8DBA98"},
+            400: { value: "#539665"},
+            500: { value: "#1A7431"},
+            600: { value: "#17682C"},
+            700: { value: "#145725"},
+            800: { value: "#0D3A19"},
+            900: { value: "#071D0C"},
+
+            // 50: { value: "#FFFFFF" },
+            // 100: { value: "#D5D3E5" },
+            // 200: { value: "#AAA7CA" },
+            // 300: { value: "#807BB0" },
+            // 400: { value: "#554F95" },
+            // 500: { value: "#2b237b" },
+            // 600: { value: "#221C62" },
+            // 700: { value: "#1A154A" },
+            // 800: { value: "#110E31" },
+            // 900: { value: "#090719" },
           },
         },
       },
@@ -49,6 +69,7 @@ const config = defineConfig({
             highlight: { value: "#FFCC00"},
             mutedHighlight: { value: "#E6BD1A"},
             alert: { value: "#FF4D4D"},
+            alertMuted: { value: "#e64545"},
           },
         },
       },

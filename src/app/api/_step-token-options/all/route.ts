@@ -2,7 +2,7 @@ export const dynamic = 'force-static'
 
 import { NextResponse } from 'next/server'
 import { GetAllStepTokenOptionsResponse } from '@/_types'
-import { getAllStepTokenOpions } from '@/_lib/db'
+import { getAllStepTokenOpions } from '@/_db'
  
 export async function GET() {
     // Inline delay function

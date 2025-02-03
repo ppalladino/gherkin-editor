@@ -2,7 +2,7 @@ export const dynamic = 'force-static'
 
 import { NextResponse } from 'next/server'
 import { GetStepTemplatesResponse } from '@/_types'
-import { getAllStepTemplates, deleteAllStepTemplates } from '@/_lib/db'
+import { getAllStepTemplates, deleteAllStepTemplates } from '@/_db'
  
 export async function GET() {
     // Inline delay function

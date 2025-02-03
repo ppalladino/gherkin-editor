@@ -29,6 +29,34 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Local DB
+
+*Run sql file*
+`> sqlite3 gherkin-editor-database.db < <sql file name>.sql`
+
+*Run sql file in repo of sql files*
+`> sqlite3 gherkin-editor-database.db < src/_sql/<sql file name>.sql`
+
+*Start CLI session*
+`> sqlite3 gherkin-editor-database.db` 
+
+*See all tables*
+`sqlite> .tables`
+
+*See the schema for a table*
+`sqlite> .schema <table name>`
+
+*Run sql query*
+`sqlite> SELECT * FROM table;` 
+
+*Exit sessions*
+`sqlite> .exit`
+
+### Convienince queries
+
+*Delte table*
+`sqlite> DROP TABLE <table name>;`
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
