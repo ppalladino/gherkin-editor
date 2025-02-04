@@ -6,6 +6,7 @@ import { FaSearch, FaTimesCircle } from "react-icons/fa"
 interface ClearableSearchInputProps extends BoxProps {
     onInputChange: (value: string) => void;
     onEnter?: (value: string) => void;
+    onTab?: (value: string) => void;
     debounceMilliseconds?: number;
     placeholder?: string;
     placeholderIcon?: React.ReactNode;
@@ -14,6 +15,7 @@ interface ClearableSearchInputProps extends BoxProps {
 export default function ClearableSearchInput({
     onInputChange,  
     onEnter,
+    onTab,
     debounceMilliseconds = 300,
     placeholder = "Search...",
     placeholderIcon = <FaSearch />,
@@ -59,7 +61,11 @@ export default function ClearableSearchInput({
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (onEnter && e.key === "Enter") {
           onEnter(searchTerm);
-        }
+          setSearchTerm("")
+        } else if (e.key === "Backspace") {
+            setSearchTerm("")
+        }  
+        console.log(e.key)
       };
 
   
@@ -72,8 +78,8 @@ export default function ClearableSearchInput({
                     <Box
                         as="button"
                         cursor="pointer"
-                        color="brand.500"
-                        _hover={{ color: "brand.300" }}
+                        color="grey"
+                        _hover={{ color: "brand.500" }}
                         onClick={() => handleClear()}
                     >
                         <FaTimesCircle />
@@ -82,9 +88,9 @@ export default function ClearableSearchInput({
             >
                 <Input 
                     placeholder={placeholder} 
-                    _placeholder={{ color: "brand.300" }}
+                    _placeholder={{ color: "brand.600" }}
                     backgroundColor={"brand.100"}
-                    color={"brand.500"}
+                    color={"brand.900"}
                     value={searchTerm}
                     onChange={handleChange} 
                     onKeyDown={handleKeyDown}

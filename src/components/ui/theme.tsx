@@ -32,7 +32,7 @@ const config = defineConfig({
       tokens: {
         colors: {
           brand: {
-            50:  { value: "#F4F8F5"},
+            50:  { value: "#FFFFFF"},
             100: { value: "#E8F1EA"},
             200: { value: "#C6DCCC"},
             300: { value: "#8DBA98"},

@@ -34,20 +34,19 @@ export default function StepTemplateDraggableCard({
             borderRadius="md"
             boxShadow="sm"
             mb={4}
-            
             align={"center"}
         >
             <Flex 
                 pl={2}
                 pr={2}
                 h="55px"
-                backgroundColor={isDragging ? "brand.200" : "brand.300"}
+                backgroundColor={isDragging ? "brand.700" : "brand.500"}
                 borderLeftRadius="md"
                 cursor="grab"
                 justify={"center"}
                 direction={"column"}
                 _hover={{
-                    backgroundColor: "brand.mutedHighlight"
+                    color: "brand.mutedHighlight"
                 }}
             >
                 <FaGripVertical />
@@ -58,7 +57,8 @@ export default function StepTemplateDraggableCard({
                 flex={1}
                 h="55px"
                 borderRightRadius="md"
-                backgroundColor={isDragging ? "brand.300" : "brand.400"}
+                backgroundColor={isDragging ? "brand.700" : "brand.500"}
+                color={"brand.100"}
             >
                 {stepTemplate.title}
             </Text>

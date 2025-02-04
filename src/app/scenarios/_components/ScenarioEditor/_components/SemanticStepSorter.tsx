@@ -11,10 +11,12 @@ import { PiTargetBold } from "react-icons/pi";
 
 interface SemanticStepSorterProps extends FlexProps {
     stepTemplates: StepTemplate[];
+    onEnterClicked?: (topStepTemplate: StepTemplate) => void;
 }
 
 export default function SemanticStepSorter({
     stepTemplates,
+    onEnterClicked,
     ...rest
 }: SemanticStepSorterProps) {
 
@@ -33,13 +35,19 @@ export default function SemanticStepSorter({
           console.error("Error finding closest matching step template:", error);
         }
     };
+
+    const handleEnterClicked = () => {
+        if(onEnterClicked && sortedStepTemplates.length > 0) {
+            onEnterClicked(sortedStepTemplates[0])
+        }
+    }
     
     return (
         <Flex flex="1" direction="column" {...rest}>
             <ClearableSearchInput 
                 onInputChange={(value) => {handleFilter(value)}}  
-                onEnter={(value) => {console.log("Enter clicked: ", value)}}
-                placeholder="Enter Semantic Target...."
+                onEnter={() => {handleEnterClicked()}}
+                placeholder="Enter a step in your own words...."
                 mb={5}
                 placeholderIcon={<PiTargetBold />}
             />

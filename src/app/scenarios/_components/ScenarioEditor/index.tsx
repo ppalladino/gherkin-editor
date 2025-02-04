@@ -171,27 +171,33 @@ export default function ScenarioEditor({
                 <Flex direction="row"  flex="1">
                     {/* Left Column */}
                     <Flex flex="1.5" p={4} direction="column">
-                        <Tabs.Root variant="plain" defaultValue="filter-steps" flex="1">
-                            <Tabs.List bg="bg.muted" rounded="l3" backgroundColor={"brand.400"}>
-                                <Tabs.Trigger value="filter-steps">
+                        <Tabs.Root fitted variant="enclosed" defaultValue="filter-steps" flex="1">
+                            <Tabs.List rounded="l3" backgroundColor={"brand.600"}>
+                                <Tabs.Trigger value="filter-steps" color="brand.100" _selected={{bg: "brand.500", color:"brand.highlight"}}>
                                     <FaSortAmountDown /> 
                                     Semantic Sort
                                 </Tabs.Trigger>
-                                <Tabs.Trigger value="convert-text">
+                                <Tabs.Trigger value="convert-text" color="brand.100" _selected={{bg: "brand.500", color:"brand.highlight"}}>
                                     <FaMagic />
                                     Convert Text
                                 </Tabs.Trigger>
-                                <Tabs.Trigger value="recycle-scenario">
+                                <Tabs.Trigger value="recycle-scenario" color="brand.100" _selected={{bg: "brand.500", color:"brand.highlight"}}>
                                     <FaRecycle />
                                     Copy Scenario
                                 </Tabs.Trigger>
                                 <Tabs.Indicator 
-                                    backgroundColor="brand.300"
+                                    backgroundColor="brand.500"
+                                    css={{ color: "brand.highlight" }}
                                     rounded="l2" 
+                                    boxShadow={"none!important"}
+                                    border={"none!important"}
                                 />
                             </Tabs.List>
                             <Tabs.Content value="filter-steps" flex="1">
-                                <SemanticStepSorter stepTemplates={projectAggregate.stepTemplates} />
+                                <SemanticStepSorter 
+                                    stepTemplates={projectAggregate.stepTemplates} 
+                                    onEnterClicked={(stepTemplate: StepTemplate) => {handleAppendStepTemplates([stepTemplate])}}
+                                />
                             </Tabs.Content>
                             <Tabs.Content value="convert-text" flex="1">
                                 <ConvertTextToSteps 

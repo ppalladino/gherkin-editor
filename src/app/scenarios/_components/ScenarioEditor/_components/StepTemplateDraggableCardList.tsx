@@ -20,9 +20,10 @@ export default function StepTemplateDraggableCardList({
             maxH={height}
             height="100%"
             p={4}
-            overflowY="scroll" // or "scroll"
+            overflowY="scroll"
             border="2px solid"
-            borderColor="brand.400"
+            borderColor="brand.600"
+            backgroundColor={"brand.600"}
             rounded="md"
         >
             {children}
