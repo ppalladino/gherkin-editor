@@ -1,32 +1,40 @@
 "use client"
 
-import { useEffect, Usable } from 'react';
-import { use } from "react";
-import { Flex } from "@chakra-ui/react";
-import { toaster } from "@/components/ui/toaster"
-import { StepTemplate } from '@/_types';
-import { useGetStepTemplateQuery, usePatchStepTemplateMutation } from '@/_services';
-import Spinner from "@/_components/Spinner";
+import React, { useEffect, useState, Usable, use } from "react";
+import { Heading, Flex } from "@chakra-ui/react";
+import Spinner from "@/_components/Spinner"
 import ErrorContent from "@/_components/ErrorContent";
-import StepTemplateEditor from "./_components/StepTemplateEditor";
+import ModelEditor from "../_components/ModelEditor";
+import { v4 as uuidv4 } from 'uuid';
+import { toaster } from "@/components/ui/toaster"
 
-interface StepTemplatesEditPageProps {
+// EDIT THESE MODEL TYPE SPECIFIC ITEMS
+import { 
+    Project as ModelType,
+    Organization
+} from "@/_types";
+import { 
+    useGetProjectQuery as useGetQuery, 
+    usePutProjectMutation as usePutMutation,
+    useGetOrganizationsQuery
+} from "@/_services";
+
+const modelName = "Project"
+
+interface EditPageProps {
     params: Usable<{id: string}>;
 }
 
-export default function StepTemplatesEditPage({params} : StepTemplatesEditPageProps) {
+export default function EditPage({params}: EditPageProps) {
     const { id } = use<{id: string}>(params);
-    const { data, error: isLoadingError, isLoading } = useGetStepTemplateQuery(id);
 
-    const [
-        updateStepTemplate, // This is the mutation trigger
-        { 
-            isLoading: isUpdating, 
-            isSuccess: isUpdatingSuccess, 
-            error: isUpdatingError
-        }, // This is the destructured mutation result
-      ] = usePatchStepTemplateMutation()
+    const { data: getData, error: isGetError, isLoading: isGetLoading } = useGetQuery(id);
+    const [putModel, { isLoading: isPutLoading, isSuccess: isPutSuccess, isError: isPutError, error: putError }] = usePutMutation();
 
+    const [model, setModel] = useState<ModelType>()
+
+    let isLoading = isGetLoading || isPutLoading
+    
     const showError = (errorTitle: string, errorDescription: string) => {
         toaster.create({
             title: errorTitle,
@@ -36,98 +44,79 @@ export default function StepTemplatesEditPage({params} : StepTemplatesEditPagePr
     }
 
     useEffect(() => {
-        if (isLoadingError) {
-            showError(
-                `Error Loading Step Template`,
-                JSON.stringify(isLoadingError)
-            )
+        if (getData) {
+            setModel(getData.data.project)
         }
-    }, [isLoadingError])
+    }, [getData])
 
     useEffect(() => {
-        if (isUpdatingError) {
-            showError(
-                `Error Updating Step Template`,
-                JSON.stringify(isUpdatingError)
-            )
-        }
-    }, [isUpdatingError])
-
-    useEffect(() => {
-        if (isUpdatingSuccess) {            
+        if (isPutSuccess) {
             toaster.create({
                 title: `Success!`,
-                description: 'Step Template updated successfully',
+                description: `${modelName} Updated.`,
                 type: 'success',
             })
         }
-    }, [isUpdatingSuccess])
+    }, [isPutSuccess])
 
-    const handleSubmit = (submittedStepTemplate: StepTemplate) => {
-        updateStepTemplate(submittedStepTemplate)
+    useEffect(() => {
+        if (isGetError) {
+            showError(
+                `Error Getting ${modelName}`,
+                JSON.stringify(isGetError)
+            )
+        }
+    }, [isGetError])
+
+    useEffect(() => {
+        if (isPutError) {
+            showError(
+                `Error Updating ${modelName}`,
+                JSON.stringify(isPutError)
+            )
+        }
+    }, [isPutError])
+
+    const handleSubmit = async (model: ModelType) => {
+        const putResult = await putModel(model).unwrap();
+        setModel(putResult.data.project)
     }
+
+    // GET FORIEGN MODELS
+    const { 
+        data: getOrganizationsResponse, 
+        error: isGetOrganizationsError, 
+        isLoading: isGetOrganizationsLoading 
+    } = useGetOrganizationsQuery(undefined)
+    const [organizations, setOrganizations] = useState<Organization[]>([])
+    useEffect(() => {
+        setOrganizations(getOrganizationsResponse?.data.organizations || [])
+    }, [getOrganizationsResponse])
 
     return (
         <Flex flex="1">
-        {
-            isLoading && <Spinner />
-        }
-        {
-            isLoadingError && <ErrorContent />
-        }
-        {
-            data && <StepTemplateEditor 
-                        stepTemplate={data.data.stepTemplate} 
-                        onSubmit={(submittedStepTempalte) => handleSubmit(submittedStepTempalte)}
-                        isUpdating={isUpdating}
-                    />
-        }
+            {
+                isGetLoading && <Spinner />
+            }
+            {
+                isGetError && <ErrorContent />
+            }
+            {
+                model && 
+                <Flex flex="1" direction="column" alignItems={"center"}>
+                        <Heading 
+                            mb="30px"
+                            width={"50%"}
+                        >Edit {modelName}</Heading>
+                        <ModelEditor 
+                            organizations={organizations}
+                            model={model} 
+                            onSave={(o) => handleSubmit(o)}
+                            isUpdating={isLoading}
+                            width={"50%"}
+                        />
+                </Flex>
+            }
         </Flex>
     )
 }
-
-
-
-// import { useEffect } from 'react';
-// import { Flex } from "@chakra-ui/react";
-// import { useGetAllStepTemplatesQuery } from '@/_services';
-// import Spinner from "@/_components/Spinner";
-// import ErrorContent from "@/_components/ErrorContent";
-// import StepTemplatesTable from './_components/StepTemplatesTable';
-// import { toaster } from "@/components/ui/toaster"
-
-// export default function StepTemplatesPage() {
-//     const { data, error, isLoading } = useGetAllStepTemplatesQuery(undefined)
-
-//     useEffect(() => {
-//         if (error) {
-//             // Customize the error message based on your error structure
-//             // const errorMessage = `${error.status} ${error.data}`
-//             const errorMessage = JSON.stringify(error)
-
-            
-//             toaster.create({
-//                 title: `Error loading Step Templates`,
-//                 description: errorMessage,
-//                 type: 'error',
-//             })
-//         }
-//     }, [error])
-
-//     return (
-//       <Flex flex="1">
-        
-//         {
-//             isLoading && <Spinner />
-//         }
-//         {
-//             error && <ErrorContent />
-//         }
-//         {
-//             data && <StepTemplatesTable stepTemplates={data.data.stepTemplates}/>
-//         }
-        
-
-//       </Flex>
-//     );
-// }

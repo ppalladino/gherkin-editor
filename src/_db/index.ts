@@ -1,6 +1,7 @@
 export * from "./db"
 export * from  "./organization"
 export * from  "./project"
+export * from  "./step-template"
 
 // const initDb = (db: Database) => {
 

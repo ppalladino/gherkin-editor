@@ -1,45 +1,125 @@
 "use client"
 
-import { useEffect } from 'react';
-import { Flex } from "@chakra-ui/react";
-import { useGetAllStepTemplatesQuery } from '@/_services';
+import { useEffect, useState } from 'react';
+import Link  from 'next/link'
+import { Flex, Text } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster"
 import Spinner from "@/_components/Spinner";
 import ErrorContent from "@/_components/ErrorContent";
-import StepTemplatesTable from './_components/StepTemplatesTable';
-import { toaster } from "@/components/ui/toaster"
+import ModelsTable from './_components/ModelsTable';
+import ModelDeleteDialog from './_components/ModelDeleteDialog';
 
-export default function StepTemplatesPage() {
-    const { data, error, isLoading } = useGetAllStepTemplatesQuery(undefined)
+// Edit the below to model specifics
+import { 
+    StepTemplate as ModelType, 
+    Project 
+} from '@/_types';
 
-    useEffect(() => {
-        if (error) {
-            // Customize the error message based on your error structure
-            // const errorMessage = `${error.status} ${error.data}`
-            const errorMessage = JSON.stringify(error)
+import { 
+    useGetStepTemplatesQuery as useGetModelsQuery, 
+    useDeleteStepTemplateMutation as useDeleteModelQuery,
+    useGetProjectsQuery
+} from '@/_services';
 
-            
+const modelNameSingular = "Step Template"
+const modelNamePlural   = "Step Templates"
+
+export default function ListPage() {
+
+    const { data: getResponse, error: isGetError, isLoading: isGetLoading } = useGetModelsQuery(undefined)
+    const [deleteModel, { isLoading: isDeleting }] = useDeleteModelQuery()
+    const [listModels, setListModels] = useState<ModelType[]>([])
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+    const [modelToDelete, setModelToDelete] = useState<ModelType | undefined>()
+        
+    const handleOpenDeleteDialog = (model: ModelType) => {
+        setModelToDelete(model)
+        setIsDeleteOpen(true)
+    }
+    
+    const handleIsDeleteOpenChanged = (open: boolean) => {
+        setIsDeleteOpen(open)
+        if(!open) {
+            setModelToDelete(undefined)
+        }
+    }
+    
+    const handleDelete = async (model: ModelType) => {
+
+        setIsDeleteOpen(false)
+        const result = await deleteModel(model.id).unwrap()
+
+        if (result.data.success) {
             toaster.create({
-                title: `Error loading Step Templates`,
-                description: errorMessage,
+                title: `${modelNameSingular} Deleted`,
+                description: `${modelNameSingular} ${model.title} deleted`,
+                type: 'success',
+            })
+        } else {
+            toaster.create({
+                title: `Error Deleting ${modelNameSingular}`,
+                description: `There was an error deleting ${model.id}. Check the logs.`,
                 type: 'error',
             })
         }
-    }, [error])
+    }
+    
+    useEffect(() => {
+        if (isGetError) {
+            console.error(isGetError)
+            toaster.create({
+                title: `Error Loading ${modelNameSingular}`,
+                description: JSON.stringify(isGetError),
+                type: 'error',
+            })
+        }
+    }, [isGetError])
 
+    useEffect(() => {
+        setListModels(getResponse?.data.stepTemplates || [])
+    }, [getResponse])
+
+    // START FORIEGN MODELS
+
+        // PROJECTS
+        const [projects, setProjects] = useState<Project[]>([])
+        const { 
+            data: getProjectsResponse, 
+            error: isGetProjectsError, 
+            isLoading: isGetProjectsLoading 
+        } = useGetProjectsQuery(undefined)
+        useEffect(() => {
+            setProjects(getProjectsResponse?.data.projects || [])
+        }, [getProjectsResponse])
+
+    // END FORIEGN MODELS
+    
     return (
-      <Flex flex="1">
-        
-        {
-            isLoading && <Spinner />
-        }
-        {
-            error && <ErrorContent />
-        }
-        {
-            data && <StepTemplatesTable stepTemplates={data.data.stepTemplates}/>
-        }
-        
-
-      </Flex>
+        <Flex flex="1" direction={"column"}>
+            <Flex direction={"row"} justify={"flex-end"}>
+                <Link href="/step-templates/create">
+                    <Text p="5px" fontSize="sm">Create {modelNameSingular}</Text>
+                </Link>
+            </Flex>
+            {
+                isGetLoading && <Spinner />
+            }
+            {
+                isGetError && <ErrorContent />
+            }
+            {
+                listModels && <ModelsTable 
+                                projects={projects}
+                                models={listModels}
+                                onDelete={(model: ModelType) => handleOpenDeleteDialog(model)}
+                            />
+            }
+            <ModelDeleteDialog 
+                model={modelToDelete}
+                isOpen={isDeleteOpen} 
+                onOpenChange={(open) => {handleIsDeleteOpenChanged(open)}}
+                onDeleteConfirmed={(model) => handleDelete(model)}
+            />
+        </Flex>
     );
 }

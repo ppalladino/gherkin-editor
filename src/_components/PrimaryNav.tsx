@@ -20,7 +20,7 @@ export default function PrimaryNav() {
                     height="75"
                 />
             </Box>
-            <Heading as="h1" size="2xl" color="brand.100">Gherkin Shmerkin</Heading>
+            <Heading as="h1" size="2xl" color="brand.highlight">Gherkin Shmerkin</Heading>
             <Spacer />
             <HStack>
                 <Link href="/organizations" className={currentPath.includes("/organizations") ? "active" : ""}>
@@ -29,7 +29,7 @@ export default function PrimaryNav() {
                 <Link href="/projects" className={currentPath.includes("/projects") ? "active" : ""}>
                     <Text p="5px" fontSize="sm">Projects</Text>
                 </Link>
-                <Link href="/step-templates" className={currentPath == "/step-templates" ? "active" : ""}>
+                <Link href="/step-templates" className={currentPath.includes("step-templates") ? "active" : ""}>
                     <Text p="5px" fontSize="sm">Step Templates</Text>
                 </Link>
                 <Link href="/step-token-options" className={currentPath == "/step-token-options" ? "active" : ""}>

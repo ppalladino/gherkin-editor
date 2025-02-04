@@ -54,7 +54,8 @@ export interface StepTemplate {
     type: string;
     title: string;
     template: string;
-    textEmbedding: number[];
+    projectId: string;
+    titleTextEmbedding: number[];
 }
 
 export interface ScenarioStep {

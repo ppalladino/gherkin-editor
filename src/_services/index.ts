@@ -75,17 +75,57 @@ export const gherkinEditorApi = createApi({
 
         // STEP TEMPLATES
 
-        getAllStepTemplates: builder.query<StepTemplate[], undefined>({
-            query: () => `step-templates/all`,
+        // getAllStepTemplates: builder.query<StepTemplate[], undefined>({
+        //     query: () => `step-templates/all`,
+        // }),
+        // getStepTemplate: builder.query<StepTemplate, string>({
+        //     query: (id) => `step-templates/${id}`,
+        // }),
+        // patchStepTemplate: builder.mutation<StepTemplate, Partial<StepTemplate> & Pick<StepTemplate, 'id'>>({
+        //     query: ({ ...stepTemplate }) => ({
+        //         url: `step-templates`,
+        //         method: 'PATCH',
+        //         body: stepTemplate,
+        //     }),
+        // }),
+
+        getStepTemplates: builder.query<StepTemplate[], undefined>({
+            query: () => `step-templates`,
         }),
         getStepTemplate: builder.query<StepTemplate, string>({
             query: (id) => `step-templates/${id}`,
         }),
-        patchStepTemplate: builder.mutation<StepTemplate, Partial<StepTemplate> & Pick<StepTemplate, 'id'>>({
-            query: ({ ...stepTemplate }) => ({
-                url: `step-templates`,
-                method: 'PATCH',
-                body: stepTemplate,
+        postStepTemplate: builder.mutation<StepTemplate, StepTemplate>({
+            query: (model) => ({
+              url: '/step-templates',
+              method: 'POST',
+              body: model,
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }),
+        }),
+        putStepTemplate: builder.mutation<StepTemplate, StepTemplate>({
+            query: (model) => ({
+                url: `step-templates/${model.id}`,
+                method: 'PUT',
+                body: model,
+            }),
+        }),
+        deleteStepTemplate: builder.mutation<{ success: boolean }, string>({
+            query: (id) => ({
+              url: `step-templates/${id}`,
+              method: 'DELETE',
+            })
+        }),
+        seedStepTemplates: builder.mutation<undefined, undefined>({
+            query: (model) => ({
+              url: '/step-templates/seed',
+              method: 'POST',
+              body: {},
+              headers: {
+                'Content-Type': 'application/json',
+              },
             }),
         }),
 
@@ -116,9 +156,12 @@ export const {
     usePostProjectMutation,
     useDeleteProjectMutation,
     // STEP TEMPLATES
-    useGetAllStepTemplatesQuery,
+    useGetStepTemplatesQuery,
     useGetStepTemplateQuery,
-    usePatchStepTemplateMutation,
+    usePutStepTemplateMutation,
+    usePostStepTemplateMutation,
+    useDeleteStepTemplateMutation,
+    useSeedStepTemplatesMutation,
     // STEP TOKEN
     useGetAllStepTokenOptionsQuery,
     useGetStepTokenOptionsQuery
