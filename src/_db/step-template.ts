@@ -17,7 +17,7 @@ const fromRow = (row: StepTemplateRow): StepTemplate => {
         id: row.id,
         type: row.type,
         title: row.title,
-        template: row.title,
+        template: row.template,
         projectId: row.project_id,
         titleTextEmbedding: JSON.parse(row.title_serialized_text_embedding as unknown as string)
     }
@@ -28,7 +28,7 @@ const toRow = (model: StepTemplate): StepTemplateRow => {
         id: model.id,
         type: model.type,
         title: model.title,
-        template: model.title,
+        template: model.template,
         project_id: model.projectId,
         title_serialized_text_embedding: JSON.stringify(model.titleTextEmbedding)
     }

@@ -1,7 +1,7 @@
 'use client'
 
 import React from "react";
-import { StepTemplate, ScenarioStep, DragTypes, StepTokenOptions, Scenario } from "@/_types";
+import { StepTemplate, ScenarioStep, DragTypes, StepTokenOptions, Scenario, StepTokenAggregate } from "@/_types";
 import { Text, Flex, Box } from "@chakra-ui/react";
 import { useDrag } from 'react-dnd'
 import { FaGripVertical, FaTrash } from 'react-icons/fa';
@@ -11,7 +11,7 @@ interface StepProps {
     scenario: Scenario;
     step: ScenarioStep;
     stepTemplate: StepTemplate | undefined;
-    stepTokenOptions: StepTokenOptions[] | undefined
+    stepTokenAggregate: StepTokenAggregate[] | undefined
     onDelete: (stepId: string) => void;
     onTokenValueChange: (scenarioStepId: string, tokenKey: string, tokenValue: string) => void;
     // isNew?: boolean;
@@ -21,11 +21,18 @@ export default function Step({
     scenario,
     step,
     stepTemplate,
-    stepTokenOptions,
+    stepTokenAggregate,
     onDelete,
     onTokenValueChange,
     // isNew
 }: StepProps) {
+
+    // console.log("!!! Rendering Step: ", {
+    //     scenario,
+    //     step,
+    //     stepTemplate,
+    //     stepTokenAggregate
+    // })
 
     const [{isDragging}, drag] = useDrag(() => ({
         type: DragTypes.SCENARIO_STEP,
@@ -54,11 +61,11 @@ export default function Step({
                 </Box>
                 <Box pl={4}>
                     
-                    {step && scenario && stepTokenOptions && stepTemplate ? (
+                    {step && scenario && stepTokenAggregate && stepTemplate ? (
                         <StepInput
                             step={step}
                             scenario={scenario}
-                            stepTokenOptions={stepTokenOptions}
+                            stepTokenAggregate={stepTokenAggregate}
                             stepTemplate={stepTemplate}
                             onTokenValueChange={onTokenValueChange}
                         />

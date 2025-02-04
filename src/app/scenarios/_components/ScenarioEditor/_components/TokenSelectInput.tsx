@@ -53,7 +53,7 @@ export default function TokenSelectInput({
                 backgroundColor={"brand.400"}
             >
                 <PopoverBody>
-                    {tokenOptions.options.map((option) => (
+                    {tokenOptions.map((option) => (
                         <Text 
                             key={option.value}
                             onClick={() => {handleChange(option.value)}}

@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS step_template (
     project_id TEXT,
     FOREIGN KEY (project_id) REFERENCES project(id)
     ON DELETE CASCADE
-
 );
 
 CREATE TABLE IF NOT EXISTS step_token (

@@ -8,7 +8,7 @@ import {
     Tabs,
     Button
 } from "@chakra-ui/react";
-import { Scenario, StepTemplate, StepTokenOptions, DragTypes } from "@/_types";
+import { Scenario, StepTemplate, StepTokenOptions, DragTypes, ProjectAggregate } from "@/_types";
 // import { reorderSteps } from "@/_lib/scenario";
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
@@ -27,14 +27,16 @@ import { FaSadTear } from "react-icons/fa";
 
 interface ScenarioEditorProps extends FlexProps{
   scenario: Scenario;
-  stepTemplates: StepTemplate[];
-  stepTokenOptions: StepTokenOptions[];
+  projectAggregate: ProjectAggregate;
+//   stepTemplates: StepTemplate[];
+//   stepTokenOptions: StepTokenOptions[];
 }
 
 export default function ScenarioEditor({
     scenario: _scenario, 
-    stepTemplates, 
-    stepTokenOptions,
+    projectAggregate,
+    // stepTemplates, 
+    // stepTokenOptions,
     ...rest
 }: ScenarioEditorProps) {
 
@@ -189,11 +191,11 @@ export default function ScenarioEditor({
                                 />
                             </Tabs.List>
                             <Tabs.Content value="filter-steps" flex="1">
-                                <SemanticStepSorter stepTemplates={stepTemplates} />
+                                <SemanticStepSorter stepTemplates={projectAggregate.stepTemplates} />
                             </Tabs.Content>
                             <Tabs.Content value="convert-text" flex="1">
                                 <ConvertTextToSteps 
-                                    stepTemplates={stepTemplates} 
+                                    stepTemplates={projectAggregate.stepTemplates} 
                                     onAppendSuggestions={(stepTemplates) => handleAppendStepTemplates(stepTemplates)}
                                 />
                             </Tabs.Content>
@@ -220,8 +222,8 @@ export default function ScenarioEditor({
                                                 <Step 
                                                     scenario={scenario}
                                                     step={step} 
-                                                    stepTemplate={findById(stepTemplates, step.stepTemplateId)} 
-                                                    stepTokenOptions={stepTokenOptions}
+                                                    stepTemplate={findById(projectAggregate.stepTemplates, step.stepTemplateId)} 
+                                                    stepTokenAggregate={projectAggregate.stepTokensAggregate}
                                                     onDelete={handleDelete}
                                                     onTokenValueChange={handleTokenValueChange}
                                                 />

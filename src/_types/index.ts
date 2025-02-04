@@ -124,5 +124,19 @@ export interface GetStepTokenOptionsResponse extends ReponseBase {
     }
 }
 
+// AGGREGATE MODELS
+
+export interface StepTokenAggregate extends StepToken {
+    stepTokenOptions: StepTokenOption[]
+}
+
+export interface ProjectAggregate {
+    project: Project | undefined,
+    stepTemplates: StepTemplate[],
+    stepTokens: StepToken[],
+    stepTokenOptions: StepTokenOption[],
+    stepTokensAggregate: StepTokenAggregate[]
+}
+
 
 

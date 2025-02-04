@@ -1,6 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { Organization, Project, StepTemplate, StepToken, StepTokenOption } from '@/_types'
+import type { Organization, Project, ProjectAggregate, StepTemplate, StepToken, StepTokenOption } from '@/_types'
 import { getStepTemplate } from './_index'
 
 // Define a service using a base URL and expected endpoints
@@ -48,6 +48,9 @@ export const gherkinEditorApi = createApi({
         }),
         getProject: builder.query<Project, string>({
             query: (id) => `projects/${id}`,
+        }),
+        getProjectAggregate: builder.query<ProjectAggregate, string>({
+            query: (id) => `projects/aggregate/${id}`,
         }),
         postProject: builder.mutation<Project, Project>({
             query: (model) => ({
@@ -213,6 +216,7 @@ export const {
     // PROJECTS
     useGetProjectsQuery,
     useGetProjectQuery,
+    useGetProjectAggregateQuery,
     usePutProjectMutation,
     usePostProjectMutation,
     useDeleteProjectMutation,

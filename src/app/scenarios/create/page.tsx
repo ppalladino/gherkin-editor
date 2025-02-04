@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { Heading, Flex } from "@chakra-ui/react";
 import { Scenario, StepTemplate, StepTokenOptions } from "@/_types";
-import { useGetAllStepTemplatesQuery, useGetAllStepTokenOptionsQuery } from "@/_services";
+// import { useGetAllStepTemplatesQuery, useGetAllStepTokenOptionsQuery } from "@/_services";
+import { useGetProjectAggregateQuery } from "@/_services"
 import ScenarioEditor from "@/app/scenarios/_components/ScenarioEditor";
 import { v4 as uuidv4 } from 'uuid';
 import Spinner from "@/_components/Spinner";
@@ -17,12 +18,13 @@ const newScenario: Scenario = {
 }
 
 export default function CreateScenarioPage() {
-    const { data: stepTemplatesData, error: stepTemplatesError, isLoading:  isStepTemplatesLoading } = useGetAllStepTemplatesQuery(undefined)
-    const { data: stepTokenOptionsData, error: stepTokenOptionsError, isLoading: isStepTokenOptionsLoading } = useGetAllStepTokenOptionsQuery(undefined)
+    // const { data: stepTemplatesData, error: stepTemplatesError, isLoading:  isStepTemplatesLoading } = useGetAllStepTemplatesQuery(undefined)
+    // const { data: stepTokenOptionsData, error: stepTokenOptionsError, isLoading: isStepTokenOptionsLoading } = useGetAllStepTokenOptionsQuery(undefined)
+    const { data: getProjectAggregateData, error: getProjectAggregateError, isLoading: getProjectAggregateLoading } = useGetProjectAggregateQuery("fake-uuid-1234")
 
-    let isLoading = isStepTemplatesLoading || isStepTokenOptionsLoading
-    let isData = stepTemplatesData && stepTokenOptionsData
-    let isError = stepTemplatesError || stepTokenOptionsError
+    let isLoading = getProjectAggregateLoading
+    let isData = getProjectAggregateData
+    let isError = getProjectAggregateError
 
     return (
         <>
@@ -34,13 +36,14 @@ export default function CreateScenarioPage() {
                     <Heading>Create Scenario</Heading>
                     <ScenarioEditor 
                         scenario={newScenario} 
-                        stepTemplates={stepTemplatesData.data.stepTemplates}
-                        stepTokenOptions={stepTokenOptionsData.data.stepTokenOptions}
+                        projectAggregate={isData.data.projectAggregate}
+                        // stepTemplates={stepTemplatesData.data.stepTemplates}
+                        // stepTokenOptions={stepTokenOptionsData.data.stepTokenOptions}
                     />
                 </Flex>
             }
 
-            {isError && <div>stepTemplatesError: {JSON.stringify(stepTemplatesError)}, stepTokenOptionsError: {JSON.stringify(stepTokenOptionsError)}</div>}
+            {isError && <div>getProjectAggregateError: {JSON.stringify(getProjectAggregateError)}</div>}
         </>     
     );
 }

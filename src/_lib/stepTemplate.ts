@@ -61,7 +61,7 @@ export async function findClosestMatchingStepTemplate(
     let bestSimilarity = -Infinity;
   
     for (const record of templateRecords) {
-      const similarity = cosineSimilarity(subjectEmbedding, record.textEmbedding);
+      const similarity = cosineSimilarity(subjectEmbedding, record.titleTextEmbedding);
       if (similarity > bestSimilarity) {
         bestMatch = record;
         bestSimilarity = similarity;
@@ -80,7 +80,7 @@ export async function orderByBestMatchingStepTemplates(
   
     // Map each StepTemplate to its similarity score
     const templatesWithSimilarity = templateRecords.map((record) => {
-      const similarity = cosineSimilarity(subjectEmbedding, record.textEmbedding);
+      const similarity = cosineSimilarity(subjectEmbedding, record.titleTextEmbedding);
       return { record, similarity };
     });
   
