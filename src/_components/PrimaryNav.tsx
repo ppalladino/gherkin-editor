@@ -32,15 +32,18 @@ export default function PrimaryNav() {
                 <Link href="/step-templates" className={currentPath.includes("step-templates") ? "active" : ""}>
                     <Text p="5px" fontSize="sm">Step Templates</Text>
                 </Link>
-                <Link href="/step-token-options" className={currentPath == "/step-token-options" ? "active" : ""}>
+                <Link href="/step-tokens" className={currentPath.includes("step-tokens") ? "active" : ""}>
+                    <Text p="5px" fontSize="sm">Step Tokens</Text>
+                </Link>
+                <Link href="/step-token-options" className={currentPath.includes("step-token-options") ? "active" : ""}>
                     <Text p="5px" fontSize="sm">Step Token Options</Text>
                 </Link>
                 <Link href="/scenarios" className={currentPath == "/scenarios" ? "active" : ""}>
                     <Text p="5px" fontSize="sm">Scenarios</Text>
                 </Link>
-                <Link className={currentPath == "/features" ? "active" : ""} href="/features">
+                {/* <Link className={currentPath == "/features" ? "active" : ""} href="/features">
                     <Text p="5px" fontSize="sm">Features</Text>
-                </Link>
+                </Link> */}
             </HStack>
         </Flex>
     );

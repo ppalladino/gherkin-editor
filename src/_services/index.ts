@@ -1,6 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { Organization, Project, StepTemplate, StepTokenOptions } from '@/_types'
+import type { Organization, Project, StepTemplate, StepToken, StepTokenOption } from '@/_types'
 import { getStepTemplate } from './_index'
 
 // Define a service using a base URL and expected endpoints
@@ -75,20 +75,6 @@ export const gherkinEditorApi = createApi({
 
         // STEP TEMPLATES
 
-        // getAllStepTemplates: builder.query<StepTemplate[], undefined>({
-        //     query: () => `step-templates/all`,
-        // }),
-        // getStepTemplate: builder.query<StepTemplate, string>({
-        //     query: (id) => `step-templates/${id}`,
-        // }),
-        // patchStepTemplate: builder.mutation<StepTemplate, Partial<StepTemplate> & Pick<StepTemplate, 'id'>>({
-        //     query: ({ ...stepTemplate }) => ({
-        //         url: `step-templates`,
-        //         method: 'PATCH',
-        //         body: stepTemplate,
-        //     }),
-        // }),
-
         getStepTemplates: builder.query<StepTemplate[], undefined>({
             query: () => `step-templates`,
         }),
@@ -129,13 +115,88 @@ export const gherkinEditorApi = createApi({
             }),
         }),
 
+        // STEP TOKENS
+
+        getStepTokens: builder.query<StepToken[], undefined>({
+            query: () => `step-tokens`,
+        }),
+        getStepToken: builder.query<StepToken, string>({
+            query: (id) => `step-tokens/${id}`,
+        }),
+        postStepToken: builder.mutation<StepToken, StepToken>({
+            query: (model) => ({
+              url: '/step-tokens',
+              method: 'POST',
+              body: model,
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }),
+        }),
+        putStepToken: builder.mutation<StepToken, StepToken>({
+            query: (model) => ({
+                url: `step-tokens/${model.id}`,
+                method: 'PUT',
+                body: model,
+            }),
+        }),
+        deleteStepToken: builder.mutation<{ success: boolean }, string>({
+            query: (id) => ({
+              url: `step-tokens/${id}`,
+              method: 'DELETE',
+            })
+        }),
+        seedStepTokens: builder.mutation<undefined, undefined>({
+            query: (model) => ({
+              url: '/step-tokens/seed',
+              method: 'POST',
+              body: {},
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }),
+        }),
+
         // STEP TOKEN OPTIONS
 
-        getAllStepTokenOptions: builder.query<StepTokenOptions[], undefined>({
-            query: () => `step-token-options/all`,
+        getStepTokenOptions: builder.query<StepTokenOption[], undefined>({
+            query: () => `step-token-options`,
         }),
-        getStepTokenOptions: builder.query<StepTokenOptions, string>({
+        getStepTokenOption: builder.query<StepTokenOption, string>({
             query: (id) => `step-token-options/${id}`,
+        }),
+        postStepTokenOption: builder.mutation<StepTokenOption, StepTokenOption>({
+            query: (model) => ({
+              url: '/step-token-options',
+              method: 'POST',
+              body: model,
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }),
+        }),
+        putStepTokenOption: builder.mutation<StepTokenOption, StepTokenOption>({
+            query: (model) => ({
+                url: `step-token-options/${model.id}`,
+                method: 'PUT',
+                body: model,
+            }),
+        }),
+        deleteStepTokenOption: builder.mutation<{ success: boolean }, string>({
+            query: (id) => ({
+              url: `step-token-options/${id}`,
+              method: 'DELETE',
+            })
+        }),
+        seedStepTokenOptions: builder.mutation<undefined, undefined>({
+            query: (model) => ({
+              url: '/step-token-options/seed',
+              method: 'POST',
+              body: {},
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }),
         }),
     }),
 })
@@ -162,7 +223,18 @@ export const {
     usePostStepTemplateMutation,
     useDeleteStepTemplateMutation,
     useSeedStepTemplatesMutation,
-    // STEP TOKEN
-    useGetAllStepTokenOptionsQuery,
-    useGetStepTokenOptionsQuery
+    // STEP TOKENS
+    useGetStepTokensQuery,
+    useGetStepTokenQuery,
+    usePutStepTokenMutation,
+    usePostStepTokenMutation,
+    useDeleteStepTokenMutation,
+    useSeedStepTokensMutation,
+    // STEP TOKEN OPTIONS
+    useGetStepTokenOptionsQuery,
+    useGetStepTokenOptionQuery,
+    usePutStepTokenOptionMutation,
+    usePostStepTokenOptionMutation,
+    useDeleteStepTokenOptionMutation,
+    useSeedStepTokenOptionsMutation,
 } = gherkinEditorApi

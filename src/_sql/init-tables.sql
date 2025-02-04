@@ -37,6 +37,6 @@ CREATE TABLE IF NOT EXISTS step_token_option (
     value TEXT,
     value_serialized_text_embedding TEXT,
     step_token_id,
-    FOREIGN KEY (step_token_id) REFERENCES step_token_id(id)
+    FOREIGN KEY (step_token_id) REFERENCES step_token(id)
     ON DELETE CASCADE
 );

@@ -1,4 +1,3 @@
-import Database from "better-sqlite3"
 import { Organization } from "@/_types";
 import db from './db'
 

@@ -1,46 +1,37 @@
-import { StepTemplate } from "@/_types";
+import { StepToken } from "@/_types";
 import db from './db'
 
-const tableName = 'step_template'
+const tableName = 'step_token'
 
-interface StepTemplateRow {
+interface StepTokenRow {
     id: string;
-    type: string;
-    title: string;
-    template: string;
-    title_serialized_text_embedding: string;
+    key: string;
     project_id: string;
 }
 
-const fromRow = (row: StepTemplateRow): StepTemplate => {
+const fromRow = (row: StepTokenRow): StepToken => {
     return {
         id: row.id,
-        type: row.type,
-        title: row.title,
-        template: row.title,
+        key: row.key,
         projectId: row.project_id,
-        titleTextEmbedding: JSON.parse(row.title_serialized_text_embedding as unknown as string)
     }
 }
 
-const toRow = (model: StepTemplate): StepTemplateRow => {
+const toRow = (model: StepToken): StepTokenRow => {
     return {
         id: model.id,
-        type: model.type,
-        title: model.title,
-        template: model.title,
+        key: model.key,
         project_id: model.projectId,
-        title_serialized_text_embedding: JSON.stringify(model.titleTextEmbedding)
     }
 }
 
-export const getStepTemplates = (): StepTemplate[] => {
+export const getStepTokens = (): StepToken[] => {
     const statement = db.prepare(`SELECT * FROM ${tableName}`);
-    const models = statement.all().map((x: StepTemplateRow) => fromRow(x));
+    const models = statement.all().map((x: StepTokenRow) => fromRow(x));
     return models;
 };
 
-export const getStepTemplate = (id: string): StepTemplate | null => {
+export const getStepToken = (id: string): StepToken | null => {
     try {
         const statement = db.prepare(`SELECT * FROM ${tableName} WHERE id=?`);
         const row = statement.get(id);
@@ -55,26 +46,20 @@ export const getStepTemplate = (id: string): StepTemplate | null => {
       }
 };
 
-export const insertStepTemplate = (model: StepTemplate): StepTemplate => {
+export const insertStepToken = (model: StepToken): StepToken => {
     const row = toRow(model);
   
     try {
         const statement = db.prepare(`
             INSERT INTO ${tableName} (
                 id,
-                type,
-                title,
-                template,
-                project_id,
-                title_serialized_text_embedding
+                key,
+                project_id
             )
             VALUES (
                 @id,
-                @type,
-                @title,
-                @template,
-                @project_id,
-                @title_serialized_text_embedding
+                @key,
+                @project_id
             )
         `);
         statement.run(row);
@@ -86,7 +71,7 @@ export const insertStepTemplate = (model: StepTemplate): StepTemplate => {
     }
 };
 
-export const updateStepTemplate = (model: StepTemplate): StepTemplate => {
+export const updateStepToken = (model: StepToken): StepToken => {
     const row = toRow(model);
 
     try {
@@ -94,11 +79,8 @@ export const updateStepTemplate = (model: StepTemplate): StepTemplate => {
             UPDATE ${tableName}
             SET 
                 id = @id,
-                type = @type,
-                title = @title,
-                template = @template,
-                project_id = @project_id,
-                title_serialized_text_embedding = @title_serialized_text_embedding
+                key = @key,
+                project_id = @project_id
             WHERE id = @id
         `);
         const result = statement.run(row);
@@ -117,7 +99,7 @@ export const updateStepTemplate = (model: StepTemplate): StepTemplate => {
     }
 };
 
-export const deleteStepTemplate = (id: string): boolean => {
+export const deleteStepToken = (id: string): boolean => {
     try {
         const statement = db.prepare(`
             DELETE FROM ${tableName} 

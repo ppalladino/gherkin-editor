@@ -1,46 +1,43 @@
-import { StepTemplate } from "@/_types";
+import { StepTokenOption } from "@/_types";
 import db from './db'
 
-const tableName = 'step_template'
+const tableName = 'step_token_option'
 
-interface StepTemplateRow {
+interface StepTokenOptionRow {
     id: string;
-    type: string;
-    title: string;
-    template: string;
-    title_serialized_text_embedding: string;
-    project_id: string;
+    status: string;
+    step_token_id: string;
+    value: string;
+    value_serialized_text_embedding: string;
 }
 
-const fromRow = (row: StepTemplateRow): StepTemplate => {
+const fromRow = (row: StepTokenOptionRow): StepTokenOption => {
     return {
         id: row.id,
-        type: row.type,
-        title: row.title,
-        template: row.title,
-        projectId: row.project_id,
-        titleTextEmbedding: JSON.parse(row.title_serialized_text_embedding as unknown as string)
+        status: row.status,
+        stepTokenId: row.step_token_id,
+        value: row.value,
+        valueTextEmbedding: JSON.parse(row.value_serialized_text_embedding as unknown as string)
     }
 }
 
-const toRow = (model: StepTemplate): StepTemplateRow => {
+const toRow = (model: StepTokenOption): StepTokenOptionRow => {
     return {
         id: model.id,
-        type: model.type,
-        title: model.title,
-        template: model.title,
-        project_id: model.projectId,
-        title_serialized_text_embedding: JSON.stringify(model.titleTextEmbedding)
+        status: model.status,
+        step_token_id: model.stepTokenId,
+        value: model.value,
+        value_serialized_text_embedding: JSON.stringify(model.valueTextEmbedding)
     }
 }
 
-export const getStepTemplates = (): StepTemplate[] => {
+export const getStepTokenOptions = (): StepTokenOption[] => {
     const statement = db.prepare(`SELECT * FROM ${tableName}`);
-    const models = statement.all().map((x: StepTemplateRow) => fromRow(x));
+    const models = statement.all().map((x: StepTokenOptionRow) => fromRow(x));
     return models;
 };
 
-export const getStepTemplate = (id: string): StepTemplate | null => {
+export const getStepTokenOption = (id: string): StepTokenOption | null => {
     try {
         const statement = db.prepare(`SELECT * FROM ${tableName} WHERE id=?`);
         const row = statement.get(id);
@@ -55,26 +52,24 @@ export const getStepTemplate = (id: string): StepTemplate | null => {
       }
 };
 
-export const insertStepTemplate = (model: StepTemplate): StepTemplate => {
+export const insertStepTokenOption = (model: StepTokenOption): StepTokenOption => {
     const row = toRow(model);
   
     try {
         const statement = db.prepare(`
             INSERT INTO ${tableName} (
                 id,
-                type,
-                title,
-                template,
-                project_id,
-                title_serialized_text_embedding
+                status,
+                step_token_id,
+                value,
+                value_serialized_text_embedding
             )
             VALUES (
                 @id,
-                @type,
-                @title,
-                @template,
-                @project_id,
-                @title_serialized_text_embedding
+                @status,
+                @step_token_id,
+                @value,
+                @value_serialized_text_embedding
             )
         `);
         statement.run(row);
@@ -86,7 +81,7 @@ export const insertStepTemplate = (model: StepTemplate): StepTemplate => {
     }
 };
 
-export const updateStepTemplate = (model: StepTemplate): StepTemplate => {
+export const updateStepTokenOption = (model: StepTokenOption): StepTokenOption => {
     const row = toRow(model);
 
     try {
@@ -94,11 +89,10 @@ export const updateStepTemplate = (model: StepTemplate): StepTemplate => {
             UPDATE ${tableName}
             SET 
                 id = @id,
-                type = @type,
-                title = @title,
-                template = @template,
-                project_id = @project_id,
-                title_serialized_text_embedding = @title_serialized_text_embedding
+                status = @status,
+                step_token_id = @step_token_id,
+                value = @value,
+                value_serialized_text_embedding = @value_serialized_text_embedding
             WHERE id = @id
         `);
         const result = statement.run(row);
@@ -117,7 +111,7 @@ export const updateStepTemplate = (model: StepTemplate): StepTemplate => {
     }
 };
 
-export const deleteStepTemplate = (id: string): boolean => {
+export const deleteStepTokenOption = (id: string): boolean => {
     try {
         const statement = db.prepare(`
             DELETE FROM ${tableName} 

@@ -1,23 +1,23 @@
 export const dynamic = 'force-dynamic' 
 
 import { NextResponse } from 'next/server'
-import { StepTemplate as ModelType } from '@/_types'
-import { getTextEmbedding } from '@/_lib/textEmbedding'
+import { StepTokenOption as ModelType } from '@/_types'
 import { 
-    getStepTemplate as getRecord, 
-    updateStepTemplate as updateRecord, 
-    deleteStepTemplate as deleteRecord 
+    getStepTokenOption as getRecord, 
+    updateStepTokenOption as updateRecord, 
+    deleteStepTokenOption as deleteRecord 
 } from '@/_db'
+import { getTextEmbedding } from '@/_lib/textEmbedding'
  
-const modelName = 'Step Template'
+const modelName = 'Step Token Option'
 
 export async function GET(
     request: Request,
     { params }: { params: { id: string } }
 ) {
     const { id } = params
-    return NextResponse.json<{data: {stepTemplate: ModelType | null}}>({
-        data: { stepTemplate: getRecord(id) }
+    return NextResponse.json<{data: {stepTokenOption: ModelType | null}}>({
+        data: { stepTokenOption: getRecord(id) }
     })
 }
 
@@ -30,17 +30,17 @@ export async function PUT(
     try {
         const body: ModelType = await request.json();
 
-        const titleTextEmbedding = await getTextEmbedding(body.title)
-        const updatedModel = {
+        const valueTextEmbedding = await getTextEmbedding(body.value)
+        const updatedStepTokenOption = {
             ...body,
-            titleTextEmbedding,
+            valueTextEmbedding
         };
 
-        const savedModel = await updateRecord(updatedModel);
+        const savedModel = await updateRecord(updatedStepTokenOption);
 
         if (savedModel) {
-            return NextResponse.json<{ data: { stepTemplate: ModelType } }>({
-                data: { stepTemplate: savedModel },
+            return NextResponse.json<{ data: { stepTokenOption: ModelType } }>({
+                data: { stepTokenOption: savedModel },
             }, { status: 200 });
         } else {
             return NextResponse.json<{ error: string }>({

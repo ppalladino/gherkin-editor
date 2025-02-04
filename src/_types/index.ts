@@ -14,7 +14,7 @@ export enum StepTokenInputType {
     TEXT = 'text',
 }
 
-export enum TokenStatus {
+export enum StepTokenOptionStatus {
     DRAFT = 'DRAFT',
     PUBLISHED = 'PUBLISHED',
 }
@@ -30,11 +30,11 @@ export interface Project {
     organizationId: string;
 }
 
-export interface StepToken {
-    tokenKey: string;
-    inputType: StepTokenInputType;
-    tokenConstraint: string;
-}
+// export interface StepToken {
+//     tokenKey: string;
+//     inputType: StepTokenInputType;
+//     tokenConstraint: string;
+// }
 
 export interface StepTokenOptionsValue {
     id: string;
@@ -56,6 +56,20 @@ export interface StepTemplate {
     template: string;
     projectId: string;
     titleTextEmbedding: number[];
+}
+
+export interface StepToken {
+    id: string;
+    key: string;
+    projectId: string;
+}
+
+export interface StepTokenOption {
+    id: string;
+    status: string;
+    value: string;
+    stepTokenId: string;
+    valueTextEmbedding: number[];
 }
 
 export interface ScenarioStep {
