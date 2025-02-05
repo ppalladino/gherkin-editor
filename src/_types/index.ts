@@ -126,6 +126,8 @@ export interface GetStepTokenOptionsResponse extends ReponseBase {
 
 // AGGREGATE MODELS
 
+// TODO: REFACTOR - I think this is a mistake. I think that ProjectAggregate is a good idea to package related models in a single object,
+// but creating nexted models like StepTokenAggregate will be problematic. It is easy enough to use filters. 
 export interface StepTokenAggregate extends StepToken {
     stepTokenOptions: StepTokenOption[]
 }

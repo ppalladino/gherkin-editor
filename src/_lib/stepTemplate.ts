@@ -1,4 +1,4 @@
-import { StepTemplate, StepTokenOptions, StepToken, StepTokenInputType } from "@/_types"
+import { StepTemplate, StepTokenOption, StepToken, StepTokenInputType } from "@/_types"
 import { getTextEmbedding } from "./textEmbedding"
 
 export const destringifyToken = (token: string): StepToken => {
@@ -71,12 +71,111 @@ export async function findClosestMatchingStepTemplate(
     return bestMatch;
 }
 
-export async function orderByBestMatchingStepTemplates(
-    subject: string,
+const gherkinStepKeywordTokenOptions = ["step-preconditions", "step-actions", "step-results"]
+
+export function findClosestMatchingStepTokenOptions(
+    userInput: string, // Retained if needed elsewhere; otherwise you can remove it
+    userInputTextEmbedding: number[],
+    stepTemplate: StepTemplate,
+    stepTokens: StepToken[],
+    stepTokenOptions: StepTokenOption[]
+  ): Array<{ stepTemplateSegmentTokenId: string; bestOption: StepTokenOption | null }> {
+    // 1. Get all segments from the template, then filter down to token segments
+    const tokenSegments = getTemplateSegments(stepTemplate).filter((segment) => segment.isToken && segment.token.inputType === StepTokenInputType.SELECT);
+  
+    return tokenSegments.map((segment) => {
+      // Each token segment should have a tokenConstraint (key) we can match on
+      const tokenKey = segment.token.tokenConstraint;
+  
+      // Find a corresponding StepToken by the tokenKey
+      const matchingStepToken = stepTokens.find((stepToken) => stepToken.key === tokenKey);
+  
+      // If there's no matching StepToken, log and return a null match
+      if (!matchingStepToken) {
+        console.error(`Unable to find matching step token for template segment key: ${tokenKey}`);
+        return {
+          stepTemplateSegmentTokenId: segment.token.tokenKey,
+          similarOption: null,
+        };
+      }
+  
+      // Gather all StepTokenOptions for the matching token
+      const matchingOptions = stepTokenOptions.filter(
+        (option) => option.stepTokenId === matchingStepToken.id
+      );
+  
+      // Compute similarity for each option, then sort descending by similarity
+      const optionsSortedBySimilarity = matchingOptions
+        .map((option) => ({
+          option,
+          similarity: cosineSimilarity(userInputTextEmbedding, option.valueTextEmbedding),
+        }))
+        .sort((a, b) => b.similarity - a.similarity);
+  
+      // Take the highest similarity option or null if none exist
+      const bestOption = optionsSortedBySimilarity[0]?.option ?? null;
+  
+      // Return the result for this segment
+      return {
+        stepTemplateSegmentTokenId: segment.token.tokenKey,
+        bestOption: bestOption,
+      };
+    });
+  }
+  
+// export function findClosestMatchingStepTokenOptions(
+//     userInput: string,
+//     userInputTextEmbedding: number[],
+//     stepTemplate: StepTemplate,
+//     stepTokens: StepToken[],
+//     stepTokenOptions: StepTokenOption[]
+//   ): Array<{ stepTemplateSegmentTokenId: string; similarOption: StepTokenOption | null }> {
+//     // 1. Get all segments from the template and filter down to token segments
+//     const segments = getTemplateSegments(stepTemplate);
+
+//     let tokenKeyToSimilarOptions = []
+//     segments.forEach((segment) => {
+//         if(!segment.isToken) {
+//             return;
+//         }
+
+//         const tokenKey = segment.token.tokenConstraint
+//         const matchingStepToken = stepTokens.find((st) => (st.key === tokenKey))
+
+//         if(!matchingStepToken) {
+//             console.error("unable to find matching step token to template segemnt key")
+//             return
+//         }
+
+//         const matchingOptions = stepTokenOptions.filter(
+//             (option) => option.stepTokenId === matchingStepToken.id
+//         );
+
+//         const optionsSortedBySimilarity = matchingOptions
+//             .map((option) => ({
+//             option,
+//             similarity: cosineSimilarity(userInputTextEmbedding, option.valueTextEmbedding),
+//             }))
+//             .sort((a, b) => b.similarity - a.similarity);
+
+//         console.log("* SEGEMNT", segment)
+//         tokenKeyToSimilarOptions.push({
+//             // templateSegment: segment,
+//             stepTemplateSegmentTokenId: segment.token.tokenKey,
+//             matchingOption: optionsSortedBySimilarity[0].option
+//         })
+//     })
+
+//     return tokenKeyToSimilarOptions
+
+// }
+
+
+export function orderByBestMatchingStepTemplates(
+    subjectEmbedding: number[],
     templateRecords: StepTemplate[]
-  ): Promise<StepTemplate[]> {
+  ): StepTemplate[] {
     // Obtain the embedding for the subject text
-    const subjectEmbedding = await getTextEmbedding(subject);
   
     // Map each StepTemplate to its similarity score
     const templatesWithSimilarity = templateRecords.map((record) => {

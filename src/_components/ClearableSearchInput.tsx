@@ -60,14 +60,10 @@ export default function ClearableSearchInput({
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (onEnter && e.key === "Enter") {
-          onEnter(searchTerm);
-          setSearchTerm("")
-        } else if (e.key === "Backspace") {
+            onEnter(searchTerm);
             setSearchTerm("")
-        }  
-        console.log(e.key)
-      };
-
+        } 
+    };
   
     return (
         <Box {...rest}>

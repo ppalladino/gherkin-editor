@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { findById, reorderArray } from "@/_lib/utils";
 
 import { FaSortAmountDown, FaMagic, FaRecycle } from "react-icons/fa"
-import { findClosestMatchingStepTemplate, orderByBestMatchingStepTemplates } from "@/_lib/stepTemplate";
+import { findClosestMatchingStepTemplate, orderByBestMatchingStepTemplates, findClosestMatchingStepTokenOptions } from "@/_lib/stepTemplate";
 import ClearableSearchInput from "@/_components/ClearableSearchInput";
 import StepTemplateBank from "./_components/StepTemplateBank";
 import StepTemplateDropZone from "./_components/StepDropZone";
@@ -98,6 +98,88 @@ export default function ScenarioEditor({
             ...prevScenario,
             steps: newSteps,
         }));
+    }
+
+    const handleSemanticMatchAppend = (stepTemplate: StepTemplate, userInputValue: string, userInputTextEmbedding: number[]) => {
+        // console.log({userInputValue, stepTemplate})
+        const bestMatchOptions = findClosestMatchingStepTokenOptions(userInputValue, userInputTextEmbedding, stepTemplate, projectAggregate.stepTokens, projectAggregate.stepTokenOptions)
+        console.log(bestMatchOptions)
+
+
+        // scenarioTemplateStepId: string,
+        // tokenId: string,
+        // tokenValue: string
+
+        setScenario((prevScenario) => {
+            // Clone the array (for immutability)
+            const newStepId = uuidv4()
+
+            const updatedSteps = [
+                ...scenario.steps,
+                {id: newStepId, stepTemplateId: stepTemplate.id},
+            ];
+
+            const updatedStepTokenValues = [...prevScenario.stepTokenValues];
+
+            bestMatchOptions.forEach((bestMatchOption) => {
+                updatedStepTokenValues.push({
+                    stepId: newStepId,
+                    tokenKey: bestMatchOption.stepTemplateSegmentTokenId,
+                    tokenValue: bestMatchOption.bestOption?.value || "UHH?",
+                })
+                
+            })
+
+            return {
+                ...prevScenario,
+                steps: updatedSteps,
+                stepTokenValues: updatedStepTokenValues
+            };
+            
+
+
+            // const updatedStepTokenValues = [...prevScenario.stepTokenValues];
+        
+            // // Find index of existing entry
+            // const existingIndex = updatedStepTokenValues.findIndex(
+            //   (item) =>
+            //     item.stepId === scenarioTemplateStepId &&
+            //     item.tokenKey === tokenId
+            // );
+        
+            // if (existingIndex > -1) {
+            //   // Update the existing entry
+            //   updatedStepTokenValues[existingIndex] = {
+            //     ...updatedStepTokenValues[existingIndex],
+            //     tokenValue: tokenValue,
+            //   };
+            // } else {
+            //   // Add a new entry
+            //   updatedStepTokenValues.push({
+            //     stepId: scenarioTemplateStepId,
+            //     tokenKey: tokenId,
+            //     tokenValue: tokenValue,
+            //   });
+            // }
+        
+            // return {
+            //   ...prevScenario,
+            //   stepTokenValues: updatedStepTokenValues,
+            // };
+          });
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     const handleDrop = (dropIndex: number, type: string, id: string) => {
@@ -196,7 +278,12 @@ export default function ScenarioEditor({
                             <Tabs.Content value="filter-steps" flex="1">
                                 <SemanticStepSorter 
                                     stepTemplates={projectAggregate.stepTemplates} 
-                                    onEnterClicked={(stepTemplate: StepTemplate) => {handleAppendStepTemplates([stepTemplate])}}
+                                    onEnterClicked={
+                                        (
+                                            stepTemplate: StepTemplate, 
+                                            userInputValue: string, 
+                                            userInputTextEmbedding: number[]
+                                        ) => {handleSemanticMatchAppend(stepTemplate, userInputValue, userInputTextEmbedding)}}
                                 />
                             </Tabs.Content>
                             <Tabs.Content value="convert-text" flex="1">

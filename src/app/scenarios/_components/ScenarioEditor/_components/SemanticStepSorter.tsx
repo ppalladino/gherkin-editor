@@ -7,11 +7,12 @@ import ClearableSearchInput from "@/_components/ClearableSearchInput";
 import StepTemplateDraggableCard from "./StepTemplateDraggableCard";
 import StepTemplateDraggableCardList from "./StepTemplateDraggableCardList";
 import { orderByBestMatchingStepTemplates } from "@/_lib/stepTemplate";
+import { getTextEmbedding } from "@/_lib/textEmbedding"
 import { PiTargetBold } from "react-icons/pi";
 
 interface SemanticStepSorterProps extends FlexProps {
     stepTemplates: StepTemplate[];
-    onEnterClicked?: (topStepTemplate: StepTemplate) => void;
+    onEnterClicked?: (topStepTemplate: StepTemplate, userInputValue: string, userInputTextEmbedding: number[]) => void;
 }
 
 export default function SemanticStepSorter({
@@ -21,24 +22,29 @@ export default function SemanticStepSorter({
 }: SemanticStepSorterProps) {
 
     const [sortedStepTemplates, setSortedStepTemplates] = useState<StepTemplate[]>([]);
+    const [userInputTextEmbedding, setUserInputTextEmbedding] = useState<number[]>([]);
+
 
     const handleFilter = async (value: string) => {
         if (!value || value === "") {
             setSortedStepTemplates([]);
+            setUserInputTextEmbedding([])
           return;
         }
       
         try {
-            const orderedByBestMatchStepTempaltes = await orderByBestMatchingStepTemplates(value, stepTemplates);
+            const valueTextEmbedding = await getTextEmbedding(value);
+            const orderedByBestMatchStepTempaltes = orderByBestMatchingStepTemplates(valueTextEmbedding, stepTemplates);
+            setUserInputTextEmbedding(valueTextEmbedding)
             setSortedStepTemplates(orderedByBestMatchStepTempaltes);
         } catch (error) {
           console.error("Error finding closest matching step template:", error);
         }
     };
 
-    const handleEnterClicked = () => {
+    const handleEnterClicked = (userInputValue: string) => {
         if(onEnterClicked && sortedStepTemplates.length > 0) {
-            onEnterClicked(sortedStepTemplates[0])
+            onEnterClicked(sortedStepTemplates[0], userInputValue, userInputTextEmbedding)
         }
     }
     
@@ -46,7 +52,7 @@ export default function SemanticStepSorter({
         <Flex flex="1" direction="column" {...rest}>
             <ClearableSearchInput 
                 onInputChange={(value) => {handleFilter(value)}}  
-                onEnter={() => {handleEnterClicked()}}
+                onEnter={(userInputValue) => {handleEnterClicked(userInputValue)}}
                 placeholder="Enter a step in your own words...."
                 mb={5}
                 placeholderIcon={<PiTargetBold />}
