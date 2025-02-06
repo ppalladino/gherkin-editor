@@ -41,6 +41,19 @@ export interface StepTemplate {
     titleTextEmbedding: number[];
 }
 
+export interface StepTemplateSegment {
+    index: number;
+    isTokenPlaceholder: boolean,
+    segmentValue: string,
+    tokenPlaceholder: StepTemplateTokenPlaceholder | null
+}
+
+export interface StepTemplateTokenPlaceholder {
+    id: string;
+    inputType: StepTokenInputType,
+    tokenConstraint: string;
+}
+
 export interface StepToken {
     id: string;
     key: string;
@@ -50,8 +63,8 @@ export interface StepToken {
 export interface StepTokenOption {
     id: string;
     status: string;
-    value: string;
     stepTokenId: string;
+    value: string;
     valueTextEmbedding: number[];
 }
 
@@ -66,7 +79,7 @@ export interface StepTokenOptionsValue {
 
 export interface ScenarioStepTokenValue {
     stepId: string;
-    tokenKey: string;
+    stepTokenKey: string;
     tokenValue: string;
 }
 

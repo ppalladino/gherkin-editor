@@ -16,5 +16,5 @@ export function findByKey<T extends { key: string }>(list: T[], key: string): T 
 }
 
 export function findScenarioStepTokenValue(stepTokenValues: ScenarioStepTokenValue[], stepId: string, tokenKey: string): string | undefined {
-    return stepTokenValues.find(item => item.stepId === stepId && item.tokenKey === tokenKey)?.tokenValue;
+    return stepTokenValues.find(item => item.stepId === stepId && item.stepTokenKey === tokenKey)?.tokenValue;
 }

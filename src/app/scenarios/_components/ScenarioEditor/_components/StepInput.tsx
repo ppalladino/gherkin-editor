@@ -25,41 +25,35 @@ export default function StepInput({
     stepTokenOptions,
     onTokenValueChange
 }: StepInputProps) {
-    // return (renderStep(scenario, step, stepTemplate, stepTokens, stepTokenOptions, onTokenValueChange));
-    const segments = getTemplateSegments(stepTemplate);
+    const templateSegments = getTemplateSegments(stepTemplate);
 
-    // console.log("!!! Rendering Step Input renderStep()", {stepTemplate, segments})
-
-    const rendered = segments.map((segment, index) => {
+    const rendered = templateSegments.map((templateSegment, index) => {
         
-        if(!segment.isToken) {
-            return <span key={index}>{segment.string}</span>;
+        if(!templateSegment.isTokenPlaceholder) {
+            return <span key={index}>{templateSegment.segmentValue}</span>;
         } else {
-            if(!segment.token) {
+            if(!templateSegment.tokenPlaceholder) {
                 throw new Error("Token is undefined");
             }
 
-            const {tokenKey, inputType, tokenConstraint} = segment.token;
+            // const {id, inputType, tokenConstraint} = segment.token;
 
-            const tokenValue = findScenarioStepTokenValue(scenarioStepTokenValues, step.id, tokenKey) ?? undefined;
+            const tokenValue = findScenarioStepTokenValue(scenarioStepTokenValues, step.id, templateSegment.tokenPlaceholder.id) ?? undefined;
 
-
-            // console.log("!!! Rendering select -  inputType: ", inputType)
-
-            switch (inputType) {
+            switch (templateSegment.tokenPlaceholder.inputType) {
                 case "select":
 
-                    const thisStepToken = findByKey(stepTokens, tokenConstraint) ?? undefined;
+                    const thisStepToken = findByKey(stepTokens, templateSegment.tokenPlaceholder.tokenConstraint) ?? undefined;
 
                     if (!thisStepToken) {
-                        return <span key={index}>Token options with key"{tokenConstraint}" not found</span>;
+                        return <span key={index}>Token options with key"{templateSegment.tokenPlaceholder.tokenConstraint}" not found</span>;
                     }
 
                     const thisStepTokenOptions = stepTokenOptions.filter((o) => (o.stepTokenId === thisStepToken.id))
 
                     return <TokenSelectInput 
                         key={index} 
-                        tokenKey={tokenKey} 
+                        tokenKey={templateSegment.tokenPlaceholder.id} 
                         tokenOptions={thisStepTokenOptions} 
                         selectedTokenOption={tokenValue} 
                         scenarioStepId={step.id}
@@ -68,14 +62,14 @@ export default function StepInput({
                 case "text":
                     return <TokenTextInput
                         key={index} 
-                        tokenKey={tokenKey} 
-                        tokenValueConstraint={tokenConstraint}
+                        tokenKey={templateSegment.tokenPlaceholder.id} 
+                        tokenValueConstraint={templateSegment.tokenPlaceholder.tokenConstraint}
                         tokenValue={tokenValue}
                         scenarioStepId={step.id}
                         onTokenValueChange={onTokenValueChange} 
                     />
                 default:
-                    return <span key={index}>token key: {tokenKey}, input type: {inputType}, token constraint: {tokenConstraint}</span>;
+                    return <span key={index}>token key: {templateSegment.tokenPlaceholder.id}, input type: {templateSegment.tokenPlaceholder.inputType}, token constraint: {templateSegment.tokenPlaceholder.tokenConstraint}</span>;
             }
         }
     })

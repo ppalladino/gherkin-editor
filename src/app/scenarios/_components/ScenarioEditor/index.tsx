@@ -48,7 +48,7 @@ export default function ScenarioEditor({
           const existingIndex = updatedStepTokenValues.findIndex(
             (item) =>
               item.stepId === scenarioTemplateStepId &&
-              item.tokenKey === tokenId
+              item.stepTokenKey === tokenId
           );
       
           if (existingIndex > -1) {
@@ -61,7 +61,7 @@ export default function ScenarioEditor({
             // Add a new entry
             updatedStepTokenValues.push({
               stepId: scenarioTemplateStepId,
-              tokenKey: tokenId,
+              stepTokenKey: tokenId,
               tokenValue: tokenValue,
             });
           }
@@ -107,7 +107,7 @@ export default function ScenarioEditor({
             bestMatchOptions.forEach((bestMatchOption) => {
                 updatedStepTokenValues.push({
                     stepId: newStepId,
-                    tokenKey: bestMatchOption.stepTemplateSegmentTokenId,
+                    stepTokenKey: bestMatchOption.stepTemplateTokenPlaceholderId,
                     tokenValue: bestMatchOption.bestOption?.value || "UHH?",
                 })
                 
