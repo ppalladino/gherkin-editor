@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid';
 import { 
     Flex,
     FlexProps,
@@ -8,35 +9,26 @@ import {
     Tabs,
     Button
 } from "@chakra-ui/react";
-import { Scenario, StepTemplate, DragTypes, ProjectAggregate } from "@/_types";
-// import { reorderSteps } from "@/_lib/scenario";
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
-import { v4 as uuidv4 } from 'uuid';
-import { findById, reorderArray } from "@/_lib/utils";
-
 import { FaSortAmountDown, FaMagic, FaRecycle } from "react-icons/fa"
-import { findClosestMatchingStepTemplate, orderByBestMatchingStepTemplates, findClosestMatchingStepTokenOptions } from "@/_lib/stepTemplate";
-import ClearableSearchInput from "@/_components/ClearableSearchInput";
-import StepTemplateBank from "./_components/StepTemplateBank";
+import { Scenario, StepTemplate, DragTypes, ProjectAggregate } from "@/_types";
+import { findById, reorderArray } from "@/_lib/utils";
+import { findClosestMatchingStepTokenOptions } from "@/_lib/stepTemplate";
 import StepTemplateDropZone from "./_components/StepDropZone";
 import SemanticStepSorter from "./_components/SemanticStepSorter";
 import ConvertTextToSteps from "./_components/ConvertTextToSteps";
-import Step from "./_components/Step";
+import StepEditor from "./_components/StepEditor";
 import { FaSadTear } from "react-icons/fa";
 
 interface ScenarioEditorProps extends FlexProps{
   scenario: Scenario;
   projectAggregate: ProjectAggregate;
-//   stepTemplates: StepTemplate[];
-//   stepTokenOptions: StepTokenOptions[];
 }
 
 export default function ScenarioEditor({
     scenario: _scenario, 
     projectAggregate,
-    // stepTemplates, 
-    // stepTokenOptions,
     ...rest
 }: ScenarioEditorProps) {
 
@@ -101,19 +93,10 @@ export default function ScenarioEditor({
     }
 
     const handleSemanticMatchAppend = (stepTemplate: StepTemplate, userInputValue: string, userInputTextEmbedding: number[]) => {
-        // console.log({userInputValue, stepTemplate})
         const bestMatchOptions = findClosestMatchingStepTokenOptions(userInputValue, userInputTextEmbedding, stepTemplate, projectAggregate.stepTokens, projectAggregate.stepTokenOptions)
-        console.log(bestMatchOptions)
-
-
-        // scenarioTemplateStepId: string,
-        // tokenId: string,
-        // tokenValue: string
 
         setScenario((prevScenario) => {
-            // Clone the array (for immutability)
             const newStepId = uuidv4()
-
             const updatedSteps = [
                 ...scenario.steps,
                 {id: newStepId, stepTemplateId: stepTemplate.id},
@@ -135,51 +118,7 @@ export default function ScenarioEditor({
                 steps: updatedSteps,
                 stepTokenValues: updatedStepTokenValues
             };
-            
-
-
-            // const updatedStepTokenValues = [...prevScenario.stepTokenValues];
-        
-            // // Find index of existing entry
-            // const existingIndex = updatedStepTokenValues.findIndex(
-            //   (item) =>
-            //     item.stepId === scenarioTemplateStepId &&
-            //     item.tokenKey === tokenId
-            // );
-        
-            // if (existingIndex > -1) {
-            //   // Update the existing entry
-            //   updatedStepTokenValues[existingIndex] = {
-            //     ...updatedStepTokenValues[existingIndex],
-            //     tokenValue: tokenValue,
-            //   };
-            // } else {
-            //   // Add a new entry
-            //   updatedStepTokenValues.push({
-            //     stepId: scenarioTemplateStepId,
-            //     tokenKey: tokenId,
-            //     tokenValue: tokenValue,
-            //   });
-            // }
-        
-            // return {
-            //   ...prevScenario,
-            //   stepTokenValues: updatedStepTokenValues,
-            // };
           });
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     const handleDrop = (dropIndex: number, type: string, id: string) => {
@@ -312,7 +251,7 @@ export default function ScenarioEditor({
                                                     dropIndex={dropIndex}
                                                     onDrop={handleDrop}
                                                 />
-                                                <Step 
+                                                <StepEditor 
                                                     scenario={scenario}
                                                     step={step} 
                                                     stepTemplate={findById(projectAggregate.stepTemplates, step.stepTemplateId)} 

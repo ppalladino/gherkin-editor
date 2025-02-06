@@ -1,22 +1,31 @@
 'use client'
 
 import React, { useState } from "react";
-import { ScenarioStep, StepTemplate, Scenario, StepToken, StepTokenOption } from "@/_types";
-import { Text, Flex } from "@chakra-ui/react";
-import { findById, findByKey, findScenarioStepTokenValue } from "@/_lib/utils";
+import { ScenarioStep, StepTemplate, ScenarioStepTokenValue, StepToken, StepTokenOption } from "@/_types";
+import { Flex } from "@chakra-ui/react";
+import { findByKey, findScenarioStepTokenValue } from "@/_lib/utils";
 import TokenSelectInput from "./TokenSelectInput";
 import TokenTextInput from "./TokenTextInput";
 import { getTemplateSegments } from "@/_lib/stepTemplate";
 
-const renderStep = (
-    scenario: Scenario,
-    step: ScenarioStep, 
-    stepTemplate: StepTemplate,
+interface StepInputProps {
+    step: ScenarioStep;
     stepTokens: StepToken[], 
-    stepTokenOptions: StepTokenOption[],
-    handleTokenValueChange: (scenarioStepId: string, tokenKey: string, tokenValue: string) => void
-) => {
+    stepTokenOptions: StepTokenOption[], 
+    scenarioStepTokenValues: ScenarioStepTokenValue[];
+    stepTemplate: StepTemplate;
+    onTokenValueChange: (scenarioStepId: string, tokenKey: string, tokenValue: string) => void
+}
 
+export default function StepInput({
+    step,
+    scenarioStepTokenValues,
+    stepTemplate,
+    stepTokens,
+    stepTokenOptions,
+    onTokenValueChange
+}: StepInputProps) {
+    // return (renderStep(scenario, step, stepTemplate, stepTokens, stepTokenOptions, onTokenValueChange));
     const segments = getTemplateSegments(stepTemplate);
 
     // console.log("!!! Rendering Step Input renderStep()", {stepTemplate, segments})
@@ -32,7 +41,7 @@ const renderStep = (
 
             const {tokenKey, inputType, tokenConstraint} = segment.token;
 
-            const tokenValue = findScenarioStepTokenValue(scenario.stepTokenValues, step.id, tokenKey) ?? undefined;
+            const tokenValue = findScenarioStepTokenValue(scenarioStepTokenValues, step.id, tokenKey) ?? undefined;
 
 
             // console.log("!!! Rendering select -  inputType: ", inputType)
@@ -54,7 +63,7 @@ const renderStep = (
                         tokenOptions={thisStepTokenOptions} 
                         selectedTokenOption={tokenValue} 
                         scenarioStepId={step.id}
-                        onSelectedOptionChange={handleTokenValueChange} 
+                        onSelectedOptionChange={onTokenValueChange} 
                     />;
                 case "text":
                     return <TokenTextInput
@@ -63,7 +72,7 @@ const renderStep = (
                         tokenValueConstraint={tokenConstraint}
                         tokenValue={tokenValue}
                         scenarioStepId={step.id}
-                        onTokenValueChange={handleTokenValueChange} 
+                        onTokenValueChange={onTokenValueChange} 
                     />
                 default:
                     return <span key={index}>token key: {tokenKey}, input type: {inputType}, token constraint: {tokenConstraint}</span>;
@@ -72,25 +81,4 @@ const renderStep = (
     })
 
     return (<Flex direction={"row"} gap="8px">{rendered}</Flex>);
-}
-
-interface StepInputProps {
-    step: ScenarioStep;
-    stepTokens: StepToken[], 
-    stepTokenOptions: StepTokenOption[], 
-    scenario: Scenario;
-    stepTemplate: StepTemplate;
-    onTokenValueChange: (scenarioStepId: string, tokenKey: string, tokenValue: string) => void
-}
-
-export default function StepInput({
-    step,
-    scenario,
-    stepTemplate,
-    stepTokens,
-    stepTokenOptions,
-    onTokenValueChange
-}: StepInputProps) {
-    
-    return (renderStep(scenario, step, stepTemplate, stepTokens, stepTokenOptions, onTokenValueChange));
 }

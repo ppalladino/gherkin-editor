@@ -19,6 +19,8 @@ export enum StepTokenOptionStatus {
     PUBLISHED = 'PUBLISHED',
 }
 
+// NEW 
+
 export interface Organization {
     id: string;
     name: string;
@@ -28,25 +30,6 @@ export interface Project {
     id: string;
     name: string;
     organizationId: string;
-}
-
-// export interface StepToken {
-//     tokenKey: string;
-//     inputType: StepTokenInputType;
-//     tokenConstraint: string;
-// }
-
-export interface StepTokenOptionsValue {
-    id: string;
-    status:string;
-    value:string;
-    textEmbedding: number[];
-}
-
-export interface StepTokenOptions {
-    id: string;
-    key: string;
-    options: StepTokenOptionsValue[];
 }
 
 export interface StepTemplate {
@@ -72,10 +55,14 @@ export interface StepTokenOption {
     valueTextEmbedding: number[];
 }
 
-export interface ScenarioStep {
+export interface StepTokenOptionsValue {
     id: string;
-    stepTemplateId: string;
+    status:string;
+    value:string;
+    textEmbedding: number[];
 }
+
+// OLD
 
 export interface ScenarioStepTokenValue {
     stepId: string;
@@ -91,10 +78,17 @@ export interface Scenario {
     stepTokenValues: ScenarioStepTokenValue[];
 }
 
+export interface ScenarioStep {
+    id: string;
+    stepTemplateId: string;
+}
+
 export interface Feature {
     id: string;
     name: string;
 }
+
+// RESPONSES 
 
 export interface ReponseBase {
     data: any;
@@ -132,6 +126,14 @@ export interface ProjectAggregate {
     stepTokens: StepToken[],
     stepTokenOptions: StepTokenOption[]
 }
+
+// REMOVED
+
+// export interface StepTokenOptions {
+//     id: string;
+//     key: string;
+//     options: StepTokenOptionsValue[];
+// }
 
 
 

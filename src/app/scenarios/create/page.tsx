@@ -17,7 +17,11 @@ const newScenario: Scenario = {
 }
 
 export default function CreateScenarioPage() {
-    const { data: getProjectAggregateData, error: getProjectAggregateError, isLoading: getProjectAggregateLoading } = useGetProjectAggregateQuery("fake-uuid-1234")
+    const { 
+        data: getProjectAggregateData, 
+        error: getProjectAggregateError, 
+        isLoading: getProjectAggregateLoading 
+    } = useGetProjectAggregateQuery("fake-uuid-1234")
 
     let isLoading = getProjectAggregateLoading
     let isData = getProjectAggregateData
@@ -33,7 +37,7 @@ export default function CreateScenarioPage() {
                     <Heading>Create Scenario</Heading>
                     <ScenarioEditor 
                         scenario={newScenario} 
-                        projectAggregate={isData.data.projectAggregate}
+                        projectAggregate={getProjectAggregateData.data.projectAggregate}
                     />
                 </Flex>
             }

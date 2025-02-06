@@ -7,7 +7,7 @@ import { useDrag } from 'react-dnd'
 import { FaGripVertical, FaTrash } from 'react-icons/fa';
 import StepInput from "./StepInput";
 
-interface StepProps {
+interface StepEditorProps {
     scenario: Scenario;
     step: ScenarioStep;
     stepTemplate: StepTemplate | undefined;
@@ -17,7 +17,7 @@ interface StepProps {
     onTokenValueChange: (scenarioStepId: string, tokenKey: string, tokenValue: string) => void;
 }
 
-export default function Step({
+export default function StepEditor({
     scenario,
     step,
     stepTemplate,
@@ -25,7 +25,7 @@ export default function Step({
     stepTokenOptions,
     onDelete,
     onTokenValueChange,
-}: StepProps) {
+}: StepEditorProps) {
 
     const [{isDragging}, drag] = useDrag(() => ({
         type: DragTypes.SCENARIO_STEP,
@@ -57,7 +57,7 @@ export default function Step({
                     {step && scenario && stepTokens && stepTokenOptions && stepTemplate ? (
                         <StepInput
                             step={step}
-                            scenario={scenario}
+                            scenarioStepTokenValues={scenario.stepTokenValues}
                             stepTemplate={stepTemplate}
                             stepTokens={stepTokens}
                             stepTokenOptions={stepTokenOptions}
