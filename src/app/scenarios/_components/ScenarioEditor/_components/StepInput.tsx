@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from "react";
-import { ScenarioStep, StepTokenOptions, StepTemplate, Scenario, StepTokenAggregate } from "@/_types";
+import { ScenarioStep, StepTemplate, Scenario, StepToken, StepTokenOption } from "@/_types";
 import { Text, Flex } from "@chakra-ui/react";
 import { findById, findByKey, findScenarioStepTokenValue } from "@/_lib/utils";
 import TokenSelectInput from "./TokenSelectInput";
@@ -9,10 +9,11 @@ import TokenTextInput from "./TokenTextInput";
 import { getTemplateSegments } from "@/_lib/stepTemplate";
 
 const renderStep = (
-    step: ScenarioStep, 
-    stepTokenAggregate: StepTokenAggregate[], 
     scenario: Scenario,
+    step: ScenarioStep, 
     stepTemplate: StepTemplate,
+    stepTokens: StepToken[], 
+    stepTokenOptions: StepTokenOption[],
     handleTokenValueChange: (scenarioStepId: string, tokenKey: string, tokenValue: string) => void
 ) => {
 
@@ -39,16 +40,18 @@ const renderStep = (
             switch (inputType) {
                 case "select":
 
-                    const stepTokenAggregateItem = findByKey(stepTokenAggregate, tokenConstraint) ?? undefined;
+                    const thisStepToken = findByKey(stepTokens, tokenConstraint) ?? undefined;
 
-                    if (!stepTokenAggregateItem) {
+                    if (!thisStepToken) {
                         return <span key={index}>Token options with key"{tokenConstraint}" not found</span>;
                     }
+
+                    const thisStepTokenOptions = stepTokenOptions.filter((o) => (o.stepTokenId === thisStepToken.id))
 
                     return <TokenSelectInput 
                         key={index} 
                         tokenKey={tokenKey} 
-                        tokenOptions={stepTokenAggregateItem.stepTokenOptions} 
+                        tokenOptions={thisStepTokenOptions} 
                         selectedTokenOption={tokenValue} 
                         scenarioStepId={step.id}
                         onSelectedOptionChange={handleTokenValueChange} 
@@ -73,7 +76,8 @@ const renderStep = (
 
 interface StepInputProps {
     step: ScenarioStep;
-    stepTokenAggregate: StepTokenAggregate[], 
+    stepTokens: StepToken[], 
+    stepTokenOptions: StepTokenOption[], 
     scenario: Scenario;
     stepTemplate: StepTemplate;
     onTokenValueChange: (scenarioStepId: string, tokenKey: string, tokenValue: string) => void
@@ -81,11 +85,12 @@ interface StepInputProps {
 
 export default function StepInput({
     step,
-    stepTokenAggregate,
     scenario,
     stepTemplate,
+    stepTokens,
+    stepTokenOptions,
     onTokenValueChange
 }: StepInputProps) {
     
-    return (renderStep(step, stepTokenAggregate, scenario, stepTemplate, onTokenValueChange));
+    return (renderStep(scenario, step, stepTemplate, stepTokens, stepTokenOptions, onTokenValueChange));
 }

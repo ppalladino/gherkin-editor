@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 import { Text } from "@chakra-ui/react";
-import { StepTokenOptions } from "@/_types";
+import { StepTokenOption } from "@/_types";
 
 import {
     PopoverBody,
@@ -12,7 +12,7 @@ import {
 
 interface TokenSelectInputProps {
     tokenKey: string;
-    tokenOptions: StepTokenOptions;
+    tokenOptions: StepTokenOption[];
     onSelectedOptionChange: (featureTemplateStepId: string, tokenKey: string, option: string) => void;
     scenarioStepId: string;
     selectedTokenOption?: string;

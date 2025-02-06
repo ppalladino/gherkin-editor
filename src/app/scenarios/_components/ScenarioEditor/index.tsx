@@ -8,7 +8,7 @@ import {
     Tabs,
     Button
 } from "@chakra-ui/react";
-import { Scenario, StepTemplate, StepTokenOptions, DragTypes, ProjectAggregate } from "@/_types";
+import { Scenario, StepTemplate, DragTypes, ProjectAggregate } from "@/_types";
 // import { reorderSteps } from "@/_lib/scenario";
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
@@ -316,7 +316,8 @@ export default function ScenarioEditor({
                                                     scenario={scenario}
                                                     step={step} 
                                                     stepTemplate={findById(projectAggregate.stepTemplates, step.stepTemplateId)} 
-                                                    stepTokenAggregate={projectAggregate.stepTokensAggregate}
+                                                    stepTokens={projectAggregate.stepTokens}
+                                                    stepTokenOptions={projectAggregate.stepTokenOptions}
                                                     onDelete={handleDelete}
                                                     onTokenValueChange={handleTokenValueChange}
                                                 />
