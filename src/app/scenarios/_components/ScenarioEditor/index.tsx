@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Flex, FlexProps, Box, Tabs, Button } from "@chakra-ui/react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { FaSortAmountDown, FaMagic, FaRecycle } from "react-icons/fa";
+import { FaSortAmountDown, FaMagic, FaRecycle, FaList } from "react-icons/fa";
 import { Scenario, ScenarioStep, ScenarioStepTokenValue, StepTemplate, DragTypes, ProjectAggregate } from "@/_types";
 import { findById, reorderArray } from "@/_lib/utils";
 import { findClosestMatchingStepTokenOptions, updateScenarioStepTokenValues } from "@/_lib/stepTemplate";
@@ -13,6 +13,8 @@ import StepTemplateDropZone from "./_components/StepDropZone";
 import SemanticStepSorter from "./_components/SemanticStepSorter";
 import ConvertTextToSteps from "./_components/ConvertTextToSteps";
 import DraggableScenarioStepEditor from "./_components/DraggableScenarioStepEditor";
+import StepTemplateDraggableCardList from "./_components/StepTemplateDraggableCardList"
+import StepTemplateDraggableCard from "./_components/StepTemplateDraggableCard"
 import { FaSadTear } from "react-icons/fa";
 
 interface ScenarioEditorProps extends FlexProps {
@@ -191,12 +193,20 @@ export default function ScenarioEditor({
             >
               <Tabs.List rounded="l3" backgroundColor={"brand.600"}>
                 <Tabs.Trigger
+                  value="steps-list"
+                  color="brand.100"
+                  _selected={{ bg: "brand.500", color: "brand.highlight" }}
+                >
+                  <FaList />
+                  Steps List
+                </Tabs.Trigger>
+                <Tabs.Trigger
                   value="filter-steps"
                   color="brand.100"
                   _selected={{ bg: "brand.500", color: "brand.highlight" }}
                 >
                   <FaSortAmountDown />
-                  Semantic Sort
+                  AI Search
                 </Tabs.Trigger>
                 <Tabs.Trigger
                   value="convert-text"
@@ -222,6 +232,20 @@ export default function ScenarioEditor({
                   border={"none!important"}
                 />
               </Tabs.List>
+              <Tabs.Content value="steps-list" flex="1">
+                <StepTemplateDraggableCardList flex="1" height={"695px"}>
+                    {
+                        projectAggregate.stepTemplates.length > 0 
+                        && projectAggregate.stepTemplates.map((stepTemplate, index) => (
+                            <StepTemplateDraggableCard
+                                key={stepTemplate.id || index}
+                                onAddStepTemplate={(stepTemplate) => {handleAppendStepTemplates([stepTemplate])}}
+                                stepTemplate={stepTemplate}
+                            /> 
+                        ))
+                    }
+                </StepTemplateDraggableCardList>
+              </Tabs.Content>
               <Tabs.Content value="filter-steps" flex="1">
                 <SemanticStepSorter
                     stepTemplates={projectAggregate.stepTemplates}
