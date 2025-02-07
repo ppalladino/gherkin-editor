@@ -1,4 +1,4 @@
-import { StepTemplate, StepTokenOption, StepToken, StepTokenInputType, StepTemplateSegment, StepTemplateTokenPlaceholder } from "@/_types"
+import { StepTemplate, StepTokenOption, StepToken, StepTokenInputType, StepTemplateSegment, StepTemplateTokenPlaceholder, ScenarioStepTokenValue } from "@/_types"
 import { getTextEmbedding } from "./textEmbedding"
 
 export const destringifyToken = (token: string): StepTemplateTokenPlaceholder => {
@@ -143,3 +143,26 @@ export function orderByBestMatchingStepTemplates(
   
     return sortedTemplates;
   }
+
+
+export function updateScenarioStepTokenValues(stepTokenValues: ScenarioStepTokenValue[], newStepTokenValue: ScenarioStepTokenValue) {
+    const updatedStepTokenValues = [...stepTokenValues];
+
+    console.log({stepTokenValues, newStepTokenValue})
+    
+    const existingIndex = updatedStepTokenValues.findIndex(
+        (item) =>
+          item.stepId === newStepTokenValue.stepId &&
+          item.stepTokenKey === newStepTokenValue.stepTokenKey
+    );
+
+    if (existingIndex > -1) {
+        updatedStepTokenValues[existingIndex] = {
+            ...updatedStepTokenValues[existingIndex],
+            tokenValue: newStepTokenValue.tokenValue,
+        };
+      } else {
+        updatedStepTokenValues.push(newStepTokenValue);
+    }
+    return updatedStepTokenValues
+}

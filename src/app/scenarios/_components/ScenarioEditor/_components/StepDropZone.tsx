@@ -7,7 +7,7 @@ import { useDrop } from 'react-dnd'
 
 interface StepDropZoneProps extends BoxProps {
     dropIndex: number;
-    onDrop: (dropIndex: number, type: string, id: string) => void;
+    onDrop: (dropIndex: number, item: any) => void;
     keepOpen?: boolean;
 }
 
@@ -21,13 +21,13 @@ export default function StepDropZone({
 
     const [{ isOver, canDrop }, drop] = useDrop(
         () => ({
-          accept: [DragTypes.STEP_TEMPLATE, DragTypes.SCENARIO_STEP],
-          drop: (item, monitor) => { onDrop(dropIndex, item.type, item.id) },
+          accept: [DragTypes.STEP_TEMPLATE, DragTypes.SCENARIO_STEP, DragTypes.STEP_EDITOR],
           canDrop: () => (true),
           collect: (monitor) => ({
             isOver: !!monitor.isOver(),
             canDrop: !!monitor.canDrop()
-          })
+          }),
+          drop: (item, monitor) => { onDrop(dropIndex, item) },
         }),
         [dropIndex, onDrop]
     )

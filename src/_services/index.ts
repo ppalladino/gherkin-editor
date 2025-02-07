@@ -49,7 +49,7 @@ export const gherkinEditorApi = createApi({
         getProject: builder.query<Project, string>({
             query: (id) => `projects/${id}`,
         }),
-        getProjectAggregate: builder.query<ProjectAggregate, string>({
+        getProjectAggregate: builder.query<{data: ProjectAggregate}, string>({
             query: (id) => `projects/aggregate/${id}`,
         }),
         postProject: builder.mutation<Project, Project>({

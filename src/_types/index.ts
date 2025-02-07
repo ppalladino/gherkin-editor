@@ -1,6 +1,7 @@
 export const DragTypes = {
     STEP_TEMPLATE: 'STEP_TEMPLATE',
-    SCENARIO_STEP: 'SCENARIO_STEP'
+    SCENARIO_STEP: 'SCENARIO_STEP',
+    STEP_EDITOR: 'STEP_EDITOR'
 }
 
 export const StepTemplateTypes = {

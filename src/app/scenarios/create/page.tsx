@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Heading, Flex } from "@chakra-ui/react";
 import { Scenario } from "@/_types";
 import { useGetProjectAggregateQuery } from "@/_services"
@@ -37,7 +37,7 @@ export default function CreateScenarioPage() {
                     <Heading>Create Scenario</Heading>
                     <ScenarioEditor 
                         scenario={newScenario} 
-                        projectAggregate={getProjectAggregateData.data.projectAggregate}
+                        projectAggregate={getProjectAggregateData?.data.projectAggregate}
                     />
                 </Flex>
             }
