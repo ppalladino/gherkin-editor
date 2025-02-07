@@ -14,6 +14,7 @@ interface DraggableStepEditorProps {
     stepTokens: StepToken[];
     stepTokenOptions: StepTokenOption[];
     onTokenValueChange: (scenarioStepId: string, tokenKey: string, tokenValue: string) => void;
+    onStepDropped: () => void
 }
 
 export default function DraggableStepEditor({
@@ -23,6 +24,7 @@ export default function DraggableStepEditor({
     stepTokens,
     stepTokenOptions,
     onTokenValueChange,
+    onStepDropped,
 }: DraggableStepEditorProps) {
 
     const [updatedScenarioStepTokenValues, setUpdatedScenarioStepTokenValues] = useState<ScenarioStepTokenValue[]>(scenarioStepTokenValues)
@@ -46,6 +48,11 @@ export default function DraggableStepEditor({
         collect: monitor => ({
           isDragging: !!monitor.isDragging(),
         }),
+        end: (item, monitor) => {
+            if (monitor.didDrop()) {
+                onStepDropped()
+            } 
+          },
     }), [updatedStep, updatedScenarioStepTokenValues])
     
     return (

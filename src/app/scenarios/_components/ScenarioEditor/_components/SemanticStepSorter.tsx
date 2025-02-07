@@ -2,7 +2,9 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { FlexProps, Flex, Text, Box } from "@chakra-ui/react";
+import { Button } from "@/components/ui/button";
 import { PiTargetBold } from "react-icons/pi";
+import { FaPlus } from "react-icons/fa";
 import { StepTemplate, StepToken, StepTokenOption, ScenarioStepTokenValue, ScenarioStep } from "@/_types";
 import ClearableSearchInput from "@/_components/ClearableSearchInput";
 import DraggableStepEditor from './DraggableStepEditor'
@@ -15,6 +17,11 @@ interface SemanticStepSorterProps extends FlexProps {
     stepTemplates: StepTemplate[];
     stepTokens: StepToken[];
     stepTokenOptions: StepTokenOption[];
+    onAddStepTemplate: (stepTemplate: StepTemplate) => void;
+    onAddBestGuess: (
+        bestMatchStep: ScenarioStep,
+        bestMatchScenarioStepTokenValues: ScenarioStepTokenValue[],
+    ) => void;
     onEnterClicked?: (
         bestMatchStep: ScenarioStep,
         bestMatchScenarioStepTokenValues: ScenarioStepTokenValue[],
@@ -25,12 +32,15 @@ export default function SemanticStepSorter({
     stepTemplates,
     stepTokens,
     stepTokenOptions,
+    onAddStepTemplate,
+    onAddBestGuess,
     onEnterClicked,
     ...rest
 }: SemanticStepSorterProps) {
 
     const [sortedStepTemplates, setSortedStepTemplates] = useState<StepTemplate[]>([]);
     const [userInputTextEmbedding, setUserInputTextEmbedding] = useState<number[]>([]);
+    const [searchTerm, setSearchTerm] = useState<string>("");
 
     const [bestMatch, setBestMatch] = useState<{
         step: ScenarioStep;
@@ -45,6 +55,8 @@ export default function SemanticStepSorter({
             setBestMatch(null)
             return;
         }
+
+        setSearchTerm(userInputValue)
       
         try {
             const userInputTextEmbedding = await getTextEmbedding(userInputValue);
@@ -76,6 +88,19 @@ export default function SemanticStepSorter({
         }
     };
 
+    const handleAddBestGuess = () => {
+        if(bestMatch) {
+            setSearchTerm("")
+            setBestMatch(null)
+            onAddBestGuess(
+                bestMatch.step,
+                bestMatch.scenarioStepTokenValues,
+            )
+            
+
+        }
+    }
+
     const handleEnterClicked = (userInputValue: string) => {
         if(onEnterClicked && bestMatch) {
             setBestMatch(null)
@@ -83,12 +108,21 @@ export default function SemanticStepSorter({
                 bestMatch.step,
                 bestMatch.scenarioStepTokenValues,
             )
+            setSearchTerm("")
         }
+    }
+
+    // Given that the droppable surface interaction is handled out side of this component, we
+    // need to clear clear the best guess internally to make the user experience better 
+    const handleStepDropped = () => {
+        setBestMatch(null)
+        setSearchTerm("")
     }
     
     return (
         <Flex flex="1" direction="column" {...rest}>
             <ClearableSearchInput 
+                value={searchTerm}
                 onInputChange={(value) => {handleFilter(value)}}  
                 onEnter={(userInputValue) => {handleEnterClicked(userInputValue)}}
                 placeholder="Enter a step in your own words...."
@@ -110,31 +144,46 @@ export default function SemanticStepSorter({
                 <Text color={"brand.400"}>AI Suggested Step</Text>
             } */}
             {   bestMatch &&
-                
-                    <DraggableStepEditor 
-                        step = {bestMatch.step}
-                        stepTokens = {stepTokens}
-                        stepTokenOptions = {stepTokenOptions}
-                        scenarioStepTokenValues = {bestMatch.scenarioStepTokenValues}
-                        stepTemplate = {bestMatch.stepTemplate}
-                        onTokenValueChange = {(scenarioStepId, tokenKey, tokenValue) => {
-                            setBestMatch((prevBestMatch) => {
-                                if(!prevBestMatch) {
-                                    console.log("prevBestMatch is null, it shouldn't be ")
-                                    return prevBestMatch
-                                }
-                                const scenarioStepTokenValues = updateScenarioStepTokenValues(prevBestMatch.scenarioStepTokenValues, {
-                                    stepId: scenarioStepId,
-                                    stepTokenKey: tokenKey,
-                                    tokenValue: tokenValue
+                    <Flex flex="1" direction={"row"} justify="space-between" align="center">
+                        <DraggableStepEditor 
+                            step = {bestMatch.step}
+                            stepTokens = {stepTokens}
+                            stepTokenOptions = {stepTokenOptions}
+                            scenarioStepTokenValues = {bestMatch.scenarioStepTokenValues}
+                            stepTemplate = {bestMatch.stepTemplate}
+                            onStepDropped = {() => {handleStepDropped()}}
+                            onTokenValueChange = {(scenarioStepId, tokenKey, tokenValue) => {
+                                setBestMatch((prevBestMatch) => {
+                                    if(!prevBestMatch) {
+                                        console.log("prevBestMatch is null, it shouldn't be ")
+                                        return prevBestMatch
+                                    }
+                                    const scenarioStepTokenValues = updateScenarioStepTokenValues(prevBestMatch.scenarioStepTokenValues, {
+                                        stepId: scenarioStepId,
+                                        stepTokenKey: tokenKey,
+                                        tokenValue: tokenValue
+                                    })
+                                    return {
+                                        ...bestMatch,
+                                        scenarioStepTokenValues
+                                    }
                                 })
-                                return {
-                                    ...bestMatch,
-                                    scenarioStepTokenValues
-                                }
-                            })
-                        }}
-                    />
+                            }}
+                        />
+                        <Button 
+                            variant={"link"} 
+                            color="brand.200"
+                            m={0}
+                            p={0}
+                            size={"sm"}
+                            _hover={{
+                                color: "brand.highlight"
+                            }}
+                            onClick={() => handleAddBestGuess()}
+                        >
+                            <FaPlus />
+                        </Button>
+                    </Flex>
                     
                 }
             </Flex>
@@ -147,17 +196,20 @@ export default function SemanticStepSorter({
                         ?   <StepTemplateDraggableCard
                                 animation="bounce"
                                 key={stepTemplate.id || index}
+                                onAddStepTemplate={onAddStepTemplate}
                                 stepTemplate={stepTemplate}
                             />
                        
                         :   <StepTemplateDraggableCard
                                 key={stepTemplate.id || index}
+                                onAddStepTemplate={onAddStepTemplate}
                                 stepTemplate={stepTemplate}
                             />
                     ))
                     : stepTemplates.map((stepTemplate, index) => (
                         <StepTemplateDraggableCard
                             key={stepTemplate.id || index}
+                            onAddStepTemplate={onAddStepTemplate}
                             stepTemplate={stepTemplate}
                         />
                     ))

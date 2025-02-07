@@ -4,6 +4,7 @@ import { InputGroup } from "@/components/ui/input-group"
 import { FaSearch, FaTimesCircle } from "react-icons/fa"
 
 interface ClearableSearchInputProps extends BoxProps {
+    value: string,
     onInputChange: (value: string) => void;
     onEnter?: (value: string) => void;
     onTab?: (value: string) => void;
@@ -13,6 +14,7 @@ interface ClearableSearchInputProps extends BoxProps {
 }
 
 export default function ClearableSearchInput({
+    value,
     onInputChange,  
     onEnter,
     onTab,
@@ -22,7 +24,7 @@ export default function ClearableSearchInput({
     ...rest
 }: ClearableSearchInputProps) {
 
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState(value);
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Cleanup the timer if the component unmounts
@@ -33,6 +35,10 @@ export default function ClearableSearchInput({
             }
         };
     }, []);
+
+    useEffect(() => {
+        setSearchTerm(value)
+    }, [value]);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;

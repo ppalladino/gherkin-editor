@@ -228,6 +228,8 @@ export default function ScenarioEditor({
                     stepTokens={projectAggregate.stepTokens}
                     stepTokenOptions={projectAggregate.stepTokenOptions}
                     onEnterClicked={appendBestMatch}
+                    onAddBestGuess={appendBestMatch}
+                    onAddStepTemplate={(stepTemplate) => {handleAppendStepTemplates([stepTemplate])}}
                 />
               </Tabs.Content>
               <Tabs.Content value="convert-text" flex="1">
