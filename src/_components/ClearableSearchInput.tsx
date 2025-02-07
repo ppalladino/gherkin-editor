@@ -75,7 +75,6 @@ export default function ClearableSearchInput({
         <Box {...rest}>
             <InputGroup
                 w="100%" 
-                startElement={placeholderIcon}
                 endElement={
                     <Box
                         as="button"
@@ -89,6 +88,9 @@ export default function ClearableSearchInput({
                 }
             >
                 <Input 
+                    _focus={{
+                        focusRingColor: "brand.highlight"
+                    }}
                     placeholder={placeholder} 
                     _placeholder={{ color: "brand.600" }}
                     backgroundColor={"brand.100"}
