@@ -38,9 +38,8 @@ export default function CreateOrganizationPage() {
                 description: 'Organization Created.',
                 type: 'success',
             })
-            router.push(`/organizations/${newOrganization.id}`);
+            router.push('/organizations');
         }
-        
 
     }, [isCreateSuccess, router])
 
