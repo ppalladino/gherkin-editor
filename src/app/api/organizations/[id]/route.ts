@@ -8,17 +8,29 @@ export async function GET(
     request: Request,
     { params }: { params: { id: string } }
 ) {
-    const { id } = params
-    return NextResponse.json<{data: {organization: Organization | null}}>({
-        data: { organization: getOrganization(id) }
-    })
+    // Ensure params is properly awaited - destructure after await
+    const { id } = await params
+    
+    try {
+        const organization = await getOrganization(id);
+        
+        return NextResponse.json<{data: {organization: Organization | null}}>({
+            data: { organization }
+        });
+    } catch (error) {
+        console.error('Error fetching organization:', error);
+        return NextResponse.json<{ error: string }>({
+            error: 'Internal Server Error',
+        }, { status: 500 });
+    }
 }
 
 export async function PUT(
     request: Request,
     { params }: { params: { id: string } }
 ) {
-    const { id } = params;
+    // Access id directly from params object
+    const { id } = await params
 
     try {
         // Parse the request body as JSON
@@ -30,18 +42,20 @@ export async function PUT(
         };
 
         const updatedOrganization = await updateOrganization(organization);
-
-        if (updatedOrganization) {
-            return NextResponse.json<{ data: { organization: Organization } }>({
-                data: { organization: updatedOrganization },
-            }, { status: 200 });
-        } else {
+        
+        return NextResponse.json<{ data: { organization: Organization } }>({
+            data: { organization: updatedOrganization },
+        }, { status: 200 });
+    } catch (error) {
+        console.error('Error updating organization:', error);
+        
+        // Check if error is due to not found
+        if (error instanceof Error && error.message === 'Organization not found.') {
             return NextResponse.json<{ error: string }>({
                 error: 'Organization not found',
             }, { status: 404 });
         }
-    } catch (error) {
-        console.error('Error updating organization:', error);
+        
         return NextResponse.json<{ error: string }>({
             error: 'Internal Server Error',
         }, { status: 500 });
@@ -52,24 +66,27 @@ export async function DELETE(
     request: Request,
     { params }: { params: { id: string } }
 ) {
-    const { id } = params
+    // Access id directly from params object
+    const { id } = await params
 
     try {
-        const wasDeleted = await deleteOrganization(id) // Use await if deleteOrganization is async
+        const wasDeleted = await deleteOrganization(id);
 
-        if (wasDeleted) {
-            return NextResponse.json<{ data: { success: boolean } }>({
-                data: { success: true },
-            }, { status: 200 })
-        } else {
+        return NextResponse.json<{ data: { success: boolean } }>({
+            data: { success: true },
+        }, { status: 200 });
+    } catch (error) {
+        console.error('Error deleting organization:', error);
+        
+        // If error message indicates not found
+        if (error instanceof Error && error.message.includes('not found')) {
             return NextResponse.json<{ error: string }>({
                 error: 'Organization not found',
-            }, { status: 404 })
+            }, { status: 404 });
         }
-    } catch (error) {
-        console.error('Error deleting organization:', error)
+        
         return NextResponse.json<{ error: string }>({
             error: 'Internal Server Error',
-        }, { status: 500 })
+        }, { status: 500 });
     }
 }

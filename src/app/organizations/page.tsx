@@ -34,20 +34,29 @@ export default function Organizations() {
     }
     
     const handleDelete = async (organization: Organization) => {
-
         setIsDeleteOpen(false)
-        const result = await deleteOrganization(organization.id).unwrap()
-
-        if (result.data.success) {
+        
+        try {
+            const result = await deleteOrganization(organization.id).unwrap()
+            
+            if (result.data.success) {
+                toaster.create({
+                    title: `Organization Deleted`,
+                    description: `Organization ${organization.name} deleted`,
+                    type: 'success',
+                })
+            } else {
+                toaster.create({
+                    title: `Error Deleting Organization`,
+                    description: `There was an error deleting ${organization.name}. Check logs.`,
+                    type: 'error',
+                })
+            }
+        } catch (error) {
+            console.error('Delete operation failed:', error)
             toaster.create({
-                title: `Organization Deleted`,
-                description: `Organization ${organization.name} deleted`,
-                type: 'success',
-            })
-        } else {
-            toaster.create({
-                title: `Error Deleting Organiztion`,
-                description: `There was an error deleting ${organization.id}. Check logs.`,
+                title: `Error Deleting Organization`,
+                description: `There was an error deleting ${organization.name}. Please try again.`,
                 type: 'error',
             })
         }

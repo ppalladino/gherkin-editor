@@ -7,15 +7,18 @@ import { getStepTemplate } from './_index'
 export const gherkinEditorApi = createApi({
   reducerPath: 'gherkinEditorApi',
   baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/api/' }),
+  tagTypes: ['Organization', 'Project', 'StepTemplate', 'StepToken', 'StepTokenOption'],
   endpoints: (builder) => ({
 
         // ORGANIZATIONS
 
         getOrganizations: builder.query<Organization[], undefined>({
             query: () => `organizations`,
+            providesTags: ['Organization'],
         }),
         getOrganization: builder.query<Organization, string>({
             query: (id) => `organizations/${id}`,
+            providesTags: (result, error, id) => [{ type: 'Organization', id }],
         }),
         postOrganization: builder.mutation<Organization, Organization>({
             query: (organization) => ({
@@ -26,6 +29,7 @@ export const gherkinEditorApi = createApi({
                 'Content-Type': 'application/json',
               },
             }),
+            invalidatesTags: ['Organization'],
         }),
         putOrganization: builder.mutation<Organization, Organization>({
             query: (organization) => ({
@@ -33,24 +37,32 @@ export const gherkinEditorApi = createApi({
                 method: 'PUT',
                 body: organization,
             }),
+            invalidatesTags: (result, error, org) => [
+              { type: 'Organization', id: org.id },
+              'Organization'
+            ],
         }),
-        deleteOrganization: builder.mutation<{ success: boolean }, string>({
+        deleteOrganization: builder.mutation<{ data: { success: boolean } }, string>({
             query: (id) => ({
               url: `organizations/${id}`,
               method: 'DELETE',
-            })
+            }),
+            invalidatesTags: ['Organization'],
         }),
 
         // PROJECTS
 
         getProjects: builder.query<Project[], undefined>({
             query: () => `projects`,
+            providesTags: ['Project'],
         }),
         getProject: builder.query<Project, string>({
             query: (id) => `projects/${id}`,
+            providesTags: (result, error, id) => [{ type: 'Project', id }],
         }),
         getProjectAggregate: builder.query<{data: ProjectAggregate}, string>({
             query: (id) => `projects/aggregate/${id}`,
+            providesTags: (result, error, id) => [{ type: 'Project', id }],
         }),
         postProject: builder.mutation<Project, Project>({
             query: (model) => ({
@@ -61,6 +73,7 @@ export const gherkinEditorApi = createApi({
                 'Content-Type': 'application/json',
               },
             }),
+            invalidatesTags: ['Project'],
         }),
         putProject: builder.mutation<Project, Project>({
             query: (model) => ({
@@ -68,12 +81,17 @@ export const gherkinEditorApi = createApi({
                 method: 'PUT',
                 body: model,
             }),
+            invalidatesTags: (result, error, project) => [
+              { type: 'Project', id: project.id },
+              'Project'
+            ],
         }),
-        deleteProject: builder.mutation<{ success: boolean }, string>({
+        deleteProject: builder.mutation<{ data: { success: boolean } }, string>({
             query: (id) => ({
               url: `projects/${id}`,
               method: 'DELETE',
-            })
+            }),
+            invalidatesTags: ['Project'],
         }),
 
         // STEP TEMPLATES
