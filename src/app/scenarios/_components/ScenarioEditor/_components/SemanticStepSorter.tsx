@@ -129,7 +129,7 @@ export default function SemanticStepSorter({
                 mb={5}
                 placeholderIcon={<PiTargetBold />}
             />
-            <Text color={"brand.200"} mb={5}>AI Suggested Step:</Text>
+            <Text color={"brand.200"} mb={5}>AI Suggested Populated Step:</Text>
             <Flex 
                 flex="1" 
                 padding={5} 
@@ -187,7 +187,7 @@ export default function SemanticStepSorter({
                     
                 }
             </Flex>
-            <Text color={"brand.200"} mb={5}>AI Suggested Step Templates:</Text>
+            <Text color={"brand.200"} mb={5}>AI Suggested Sorted Step Templates:</Text>
             <StepTemplateDraggableCardList flex="1" height={"450px"}>
                 {
                     sortedStepTemplates.length > 0 
