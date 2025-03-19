@@ -19,12 +19,14 @@ const modelNamePlural = "Step Templates";
 interface ModelsTableProps {
     models: ModelType[];
     onDelete: (model: ModelType) => void;
+    onEdit: (model: ModelType) => void;
     projects: Project[]
 }
 
 export default function ModelsTable({
     models = [],
     onDelete,
+    onEdit,
     projects
 }: ModelsTableProps) {
 
@@ -107,9 +109,15 @@ export default function ModelsTable({
                                     <Table.Cell>{projects?.find((x) => (x.id === model.projectId))?.name || "Null"}</Table.Cell>
                                     <Table.Cell>{model.title}</Table.Cell>
                                     <Table.Cell textAlign="end">
-                                        <Link href={`/step-templates/${model.id}`}>
+                                        <Button 
+                                            variant="link"
+                                            onClick={()=> {onEdit(model)}}
+                                            _hover={{
+                                                color: "brand.highlight"
+                                            }}
+                                        >
                                             Edit
-                                        </Link>
+                                        </Button>
                                         <Button 
                                             onClick={()=> {onDelete(model)}}
                                             variant="link"

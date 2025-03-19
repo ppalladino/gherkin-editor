@@ -98,9 +98,11 @@ export const gherkinEditorApi = createApi({
 
         getStepTemplates: builder.query<StepTemplate[], undefined>({
             query: () => `step-templates`,
+            providesTags: ['StepTemplate'],
         }),
         getStepTemplate: builder.query<StepTemplate, string>({
             query: (id) => `step-templates/${id}`,
+            providesTags: (result, error, id) => [{ type: 'StepTemplate', id }],
         }),
         postStepTemplate: builder.mutation<StepTemplate, StepTemplate>({
             query: (model) => ({
@@ -111,6 +113,7 @@ export const gherkinEditorApi = createApi({
                 'Content-Type': 'application/json',
               },
             }),
+            invalidatesTags: ['StepTemplate'],
         }),
         putStepTemplate: builder.mutation<StepTemplate, StepTemplate>({
             query: (model) => ({
@@ -118,12 +121,17 @@ export const gherkinEditorApi = createApi({
                 method: 'PUT',
                 body: model,
             }),
+            invalidatesTags: (result, error, model) => [
+              { type: 'StepTemplate', id: model.id },
+              'StepTemplate'
+            ],
         }),
         deleteStepTemplate: builder.mutation<{ success: boolean }, string>({
             query: (id) => ({
               url: `step-templates/${id}`,
               method: 'DELETE',
-            })
+            }),
+            invalidatesTags: ['StepTemplate'],
         }),
         seedStepTemplates: builder.mutation<undefined, undefined>({
             query: (model) => ({
@@ -134,6 +142,7 @@ export const gherkinEditorApi = createApi({
                 'Content-Type': 'application/json',
               },
             }),
+            invalidatesTags: ['StepTemplate'],
         }),
 
         // STEP TOKENS
